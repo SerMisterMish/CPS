@@ -1,0 +1,212 @@
+%%%%%%%%%%%%%%%%%%%%%%%
+%%% Стилевой файл   %%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Дата последнего изменения: 10.02.2024 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Подключаем необходимые пакеты %%%
+\usepackage{ifthen}
+\usepackage[cp1251]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amsfonts,amssymb}
+
+\usepackage{floatrow}
+\usepackage[dvips]{graphicx}
+\usepackage{verbatim}
+\usepackage{wrapfig}
+\usepackage{url}
+
+%%% Заголовок %%%
+\def\maketitle{
+
+{\raggedright \@udk \par \smallskip {\bf\@author} \par}
+
+\bigskip
+{\centering\large\bf\@title\par} \par
+\bigskip
+}
+
+\def\udk#1{\gdef\@udk{#1}}
+\def\@udk{УДК}
+
+%%% Рекомендации %%%
+\def\recprof#1{\noindent\textit{Рекомендовано к публикации профессором #1}\bigskip\vskip-0.3cm}
+
+\def\recdotz#1{\noindent\textit{Рекомендовано к публикации доцентом #1}\bigskip\vskip-0.3cm}
+
+\def\recsp#1{\noindent\textit{Рекомендовано к публикации старшим преподавателем\newline{}#1}\bigskip\vskip-0.3cm}
+
+\def\recassist#1{\noindent\textit{Рекомендовано к публикации ассистентом #1}\bigskip\vskip-0.3cm}
+
+\def\norec{\bigskip\vskip-0.3cm\vskip-0.3cm}
+
+%%% Разделы %%%
+%% Ненумерованный/нумерованный с заголовками 3-х уровней
+\newcounter{c_sec}
+\newcounter{c_sec2}
+\newcounter{c_sec3}
+\setcounter{c_sec}{0}
+\newcommand{\secn}{\arabic{c_sec}.}
+\newcommand{\subsecn}{\secn\arabic{c_sec2}.}
+\newcommand{\subsubsecn}{\subsecn\arabic{c_sec3}.}
+\newcommand{\razdel}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}
+{\addtocounter{c_sec}{+1}\setcounter{c_sec2}{0}\vspace{0.2cm}\textbf{\secn\,\,#2.}}%
+{\vspace{0.2cm}\textbf{#2.}}}%
+\newcommand{\podrazdel}[1]{\par\addtocounter{c_sec2}{+1}\setcounter{c_sec3}{0}\hspace{0.3cm}\textbf{\subsecn\,\,#1.}}%
+\newcommand{\podpodrazdel}[1]{\par\addtocounter{c_sec3}{+1}\hspace{0.3cm}\textbf{\subsubsec\,\,#1.}}%
+
+%%% Теоремы %%%
+\newcounter{c_teo}
+\setcounter{c_teo}{0}
+\newcounter{c_lem}
+\setcounter{c_lem}{0}
+\newcounter{c_gip}
+\setcounter{c_gip}{0}
+\newcounter{c_utv}
+\setcounter{c_utv}{0}
+\newcounter{c_opr}
+\setcounter{c_opr}{0}
+\newcounter{c_zam}
+\setcounter{c_zam}{0}
+\newcounter{c_pri}
+\setcounter{c_pri}{0}
+\newcounter{c_sle}
+\setcounter{c_sle}{0}
+
+\newcommand{\theorn}{\arabic{c_teo}}
+\newcommand{\Theorem}[2][numbered]{\par\setcounter{c_sle}{0}\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_teo}{+1}\par\textbf{Теорема\,\,\theorn.}\textit{ #2}}%
+{\par\textbf{Теорема.}\textit{ #2}}}%
+\newcommand{\TheoremCite}[3][numbered]{\par\setcounter{c_sle}{0}\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_teo}{+1}\par\textbf{Теорема\,\,\theorn}\,\,\cite{#2}.\textit{ #3}}%
+{\par\textbf{Теорема}\,\,\cite{#2}.\textit{ #3}}}%
+
+\newcommand{\lemman}{\arabic{c_lem}}
+\newcommand{\Lemma}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_lem}{+1}\par\textbf{Лемма\,\,\lemman.}\textit{ #2}}%
+{\par\textbf{Лемма.}\textit{ #2}}}%
+\newcommand{\LemmaCite}[3][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_lem}{+1}\par\textbf{Лемма\,\,\lemman}\,\,\cite{#2}.\textit{ #3}}%
+{\par\textbf{Лемма}\,\,\cite{#2}.\textit{ #3}}}%
+
+\newcommand{\hypotn}{\arabic{c_gip}}
+\newcommand{\Hypothesis}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_gip}{+1}\par\textbf{Гипотеза\,\,\hypotn.}\textit{ #2}}%
+{\par\textbf{Гипотеза.}\textit{ #2}}}%
+\newcommand{\HypothesisCite}[3][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_gip}{+1}\par\textbf{Гипотеза\,\,\hypotn}\,\,\cite{#2}.\textit{ #3}}%
+{\par\textbf{Гипотеза}\,\,\cite{#2}.\textit{ #3}}}%
+
+\newcommand{\staten}{\arabic{c_utv}}
+\newcommand{\Statement}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_utv}{+1}\par\textbf{Утверждение\,\,\staten.}\textit{ #2}}%
+{\par\textbf{Утверждение.}\textit{ #2}}}%
+\newcommand{\StatementCite}[3][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_utv}{+1}\par\textbf{Утверждение\,\,\staten}\,\,\cite{#2}.\textit{ #3}}%
+{\par\textbf{Утверждение}\,\,\cite{#2}.\textit{ #3}}}%
+
+\newcommand{\definn}{\arabic{c_opr}}
+\newcommand{\Definition}[1][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_opr}{+1}\par\textbf{Определение\,\,\definn.\,}}%
+{\par\textbf{Определение.}}}%
+\newcommand{\DefinitionCite}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_opr}{+1}\par\textbf{Определение\,\,\definn}\,\,\cite{#2}.}%
+{\par\textbf{Определение}\,\,\cite{#2}.}}%
+
+\newcommand{\Proof}{\par\textbf{Доказательство.} }
+
+\newcommand{\exampn}{\arabic{c_pri}}
+\newcommand{\Example}[1][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_pri}{+1}\par\textbf{Пример\,\,\exampn.}}%
+{\par\textbf{Пример.}}}%
+\newcommand{\ExampleCite}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_pri}{+1}\par\textbf{Пример\,\,\exampn}\,\,\cite{#2}.}%
+{\par\textbf{Пример}\,\,\cite{#2}.}}%
+
+\newcommand{\remrkn}{\arabic{c_zam}}
+\newcommand{\Remark}[1][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_zam}{+1}\par\textbf{Замечание\,\,\remrkn.}}%
+{\par\textbf{Замечание.}}}%
+\newcommand{\RemarkCite}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_zam}{+1}\par\textbf{Замечание\,\,\remrkn}\,\,\cite{#2}.}%
+{\par\textbf{Замечание}\,\,\cite{#2}.}}%
+
+\newcommand{\coroln}{\arabic{c_sle}}
+\newcommand{\Corollary}[2][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_sle}{+1}\par\textbf{Следствие\,\,\coroln.}\textit{ #2}}%
+{\par\textbf{Следствие.}\textit{ #2}}}%
+\newcommand{\CorollaryCite}[3][numbered]{\par\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_sle}{+1}\par\textbf{Следствие,\,\coroln}\,\,\cite{#2}.\textit{ #3}}%
+{\par\textbf{Следствие}\,\,\cite{#2}.\textit{ #3}}}%
+
+%%% Таблицы %%%
+\newcounter{c_tab}
+\setcounter{c_tab}{0}
+\newcommand{\tabn}{\arabic{c_tab}}
+\newcommand{\nextline}{\tabularnewline\hline}
+\newcommand{\Table}[5][numbered]{\par\vspace{-0.3cm}\begin{flushright}\ifthenelse{\equal{#1}{numbered}}%
+{\addtocounter{c_tab}{+1}{\footnotesize\textbf{Таблица\,\,\tabn.} #2}}%
+{{\footnotesize\textbf{Таблица.} #2}}%
+\end{flushright}\vspace{-0.5cm}\par{\footnotesize\begin{center}\begin{tabular}{#3}\hline#4\end{tabular}\end{center}}}%
+
+%%% Рисунки %%%
+\renewcommand{\@makecaption}[2]{%
+\abovecaptionskip=-5pt
+\belowcaptionskip=-27pt
+\vspace{\abovecaptionskip}%
+\sbox{\@tempboxa}{{\footnotesize {\textbf{#1.}} #2}}
+\ifdim \wd\@tempboxa > \hsize
+    \begin{center} {\footnotesize {\textbf{#1.}} #2} \par \end{center}
+\else
+    \global\@minipagefalse
+    \hbox to \hsize {\footnotesize \hfil{\textbf{#1.}} #2\hfil}%
+\fi
+\vspace{\belowcaptionskip}}
+
+\newcommand{\Figure}[3]{\begin{figure}[h]\begin{center}\includegraphics[width=#1]{#2}\caption{#3\vspace{ 1cm}}\end{center}\end{figure}}
+
+\newcommand{\WrapFigure}[5]{\begin{wrapfigure}[#1]{l}{#2}
+\includegraphics[width=#3]{#4}\caption{#5}
+\end{wrapfigure}\vspace{0.3cm}}
+
+\newcommand{\WrapFigureR}[5]{\begin{wrapfigure}[#1]{r}{#2}
+\includegraphics[width=#3]{#4}\caption{#5}
+\end{wrapfigure}\vspace{0.3cm}}
+
+%%% Списки %%%
+\newcommand{\ITEM}{\vspace{-0.2cm}\item}
+\newcommand{\MList}[1]{\par\begin{itemize}#1\end{itemize}}
+\newcommand{\NList}[1]{\par\begin{enumerate}#1\end{enumerate}}
+
+
+\pagestyle{empty}
+\textwidth 110mm
+\textheight 165mm
+\oddsidemargin 24mm
+\topmargin 2.7cm
+\renewcommand\@biblabel[1]{#1.}
+%\AtBeginDocument{\def\refname{Литература}}
+\renewenvironment{thebibliography}[1]
+     {\vskip12pt plus3pt minus6pt
+      {\centering\large\bf Литература\par}%
+      \medskip
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+
+\tolerance=1000
