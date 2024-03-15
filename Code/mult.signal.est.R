@@ -110,6 +110,7 @@ c2 <- rnorm(Q)
 # c2 <- rep(1, Q)
 s <- exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N) %o% c1 + exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N) %o% c2
 r <- 4
+r3 <- 2
 # r <- 2
 SNR <- 30
 sigma <- snr.to.sd(s, SNR)
@@ -130,7 +131,7 @@ mult.signest.sc <- function(L, Mat = TRUE, Tens = TRUE) {
     hm <- reduce(apply(s.n, 2, hankel, L = L, simplify = "list"), cbind)
     ht <- fold(hm, 1, 2:3, modes = c(L, N + 1 - L + 1, Q))
     # capture.output({ ht.hosvd <- rTensor::hosvd(ht, ranks = rep(r, 3)) })
-    capture.output({ ht.hooi <- rTensor::tucker(ht, ranks = rep(r, 3)) })
+    capture.output({ ht.hooi <- rTensor::tucker(ht, ranks = c(r, r, r3)) })
     # ht.hat <- ttl(ht.hosvd$Z, ht.hosvd$U, 1:3)
     ht.hat <- ttl(ht.hooi$Z, ht.hooi$U, 1:3)
     estimates[,,2] <- apply(ht.hat@data, 3, hankel)
