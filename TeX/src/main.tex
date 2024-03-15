@@ -91,7 +91,8 @@
     Пусть дан одномерный временной ряд, состоящий из $N$ комплексных значений $s_n$, $n=0, 1,\ldots, N-1$,
     и пусть этот ряд представим в виде конечной суммы $R$ экспоненциально-модулированных комплексных гармоник
     \begin{equation}
-        s_n = \sum_{j=1}^{R} a_j \exp\{\iu \varphi_j\} \exp\{(-\alpha_j + 2 \pi \iu \omega_j) n\}.\label{eq:1d-complex-model}
+        s_n = \sum_{j=1}^{R} a_j \exp\left\{\iu \varphi_j\right\}
+        \exp\left\{\left(-\alpha_j + 2 \pi \iu \omega_j\right) n\right\}.\label{eq:1d-complex-model}
     \end{equation}
     Параметрами модели являются амплитуды $a_j$, фазы $\varphi_j$, частоты $\omega_j$ и степени затухания $\alpha_j$.
     Приведём постановки задач выделения сигнала и оценки параметров для случая одномерного сигнала, а также
@@ -106,22 +107,29 @@
     \begin{equation}
         s_n = \sum_{j=1}^{R} c_j z_j^n,\label{eq:1d-simple-model}
     \end{equation}
-    где $c_j = a_j \exp\{\iu \varphi_j\}$, $z_j = \exp\{-\alpha_j + 2 \pi \iu \omega_j\}$.
+    где $c_j = a_j \exp\left\{\iu \varphi_j\right\}$, $z_j = \exp\left\{-\alpha_j + 2 \pi \iu \omega_j\right\}$.
     Оценка параметров $\omega_j$ и $\alpha_j$ равносильна оценке значений $z_j$, поэтому в дальнейшем будем находить
     оценки именно для них.
-    Первый этап алгоритма -- вложение, заключается в преобразовании имеющегося временного ряда в ганкелеву матрицу
-    $\mathbf{H}$ размерности $L \times K$, называемую \emph{траекторной матрицей ряда}, следующим образом:
+    \Definition \emph{Оператором вложения с длиной окна $L$} будем называть оператор, преобразующий временной ряд
+    $\left(x_0, x_1, \ldots, x_{N-1}\right)$ в ганкелеву матрицу размерности $L\times K$ ($K = N-L+1$) следующим образом:
     \begin{equation}
-        \mathbf{H} =
+        \mathbb{H}_L\left( \left(x_0, x_1, \ldots, x_{N-1}\right) \right) =
         \begin{pmatrix}
-            s_0     & s_1     & s_2     & \ldots  & s_{K-1} \\
-            s_1     & s_2     & \iddots & \ldots  & \vdots  \\
-            s_2     & \iddots & \iddots & \ldots  & \vdots  \\
-            \vdots  & \vdots  & \vdots  & \vdots  & s_{N-2} \\
-            s_{L-1} & \ldots  & \ldots  & s_{N-2} & s_{N-1} \\
-        \end{pmatrix},\label{eq:1d-hankel-matrix}
+            x_0     & x_1     & { x}_2  & \ldots  & x_{K-1} \\
+            x_1     & x_2     & \iddots & \ldots  & \vdots  \\
+            x_2     & \iddots & \iddots & \ldots  & \vdots  \\
+            \vdots  & \vdots  & \vdots  & \vdots  & x_{N-2} \\
+            x_{L-1} & \ldots  & \ldots  & x_{N-2} & x_{N-1} \\
+        \end{pmatrix}.\label{eq:hankelization-operator}
     \end{equation}
-    где параметр $L>R$, называемый \emph{длиной окна}, выбирается так, чтобы $K = N-L+1 \geqslant R$.
+
+    Первый этап алгоритма -- вложение, заключается в выборе длины окна $L\geqslant R$ так,
+    чтобы $K = N-L+1 \geqslant R$, и преобразовании имеющегося временного ряда в ганкелеву матрицу с помощью
+    оператора вложения:
+    \begin{equation}
+        \mathbf{H} = \mathbb{H}_L\left(\left(s_0, s_1, \ldots, s_{N-1}\right)\right).\label{eq:1d-hankel-matrix}
+    \end{equation}
+    Полученная матрица называется \emph{траекторной матрицей ряда}.
     Эта матрица может быть представлена в виде следующего произведения трёх матриц:
     \begin{equation}
         \mathbf{H} =
@@ -218,14 +226,15 @@
     \begin{equation}
         \begin{split}
             x_n &= s_n + \varepsilon_n \\
-            &=\underbrace{\sum_{j=1}^{R} c_j e^{-\alpha_j n} \cos(2 \pi \omega_j n)}_{\text{сигнал}} + \underbrace{\varepsilon_n}_{\text{шум}}, \quad n=0,1,\ldots, N-1.
+            &=\underbrace{\sum_{j=1}^{R} c_j e^{-\alpha_j n} \cos\left(2 \pi \omega_j n\right)}_{\text{сигнал}}
+            + \underbrace{\varepsilon_n}_{\text{шум}}, \quad n=0,1,\ldots, N-1.
         \end{split}
         \label{eq:1d-real-model}
     \end{equation}
     Приведём алгоритм решения этой задачи с помощью метода SSA~\cite{ssa}.
 
     Аналогично предыдущему алгоритму, по ряду~\eqref{eq:1d-real-model} строится траекторная матрица $\mathbf{H}$
-    вида~\eqref{eq:1d-hankel-matrix} с параметром $L > 2R$.
+    вида~\eqref{eq:1d-hankel-matrix} с длиной окна $L \geqslant 2R$.
     Далее рассматривается SVD этой матрицы в виде~\eqref{eq:1d-complex-svd},
     где ${\widehat{\mathbf{U}} \in \mathbb{C}^{L\times 2R}}$, ${\mathbf{U}_0 \in \mathbb{C}^{L\times (L-2R)}}$,
     $\widehat{\mathbf{\Sigma}} \in \mathbb{C}^{2R\times 2R}$, $\mathbf{\Sigma}_0 \in \mathbb{C}^{(L-2R)\times (K-2R)}$,
@@ -240,7 +249,7 @@
         \widetilde{s}_n = \frac {1}{|M_n|} \sum_{i,j\in M_n}\widehat{x}_{ij}, \quad n=0,1,\ldots, N-1,
         \label{eq:1d-diag-averaging}
     \end{equation}
-    где ${M_n = \{(i, j):\: i+j-2=n,\, 1 \leqslant i \leqslant L,\,  1 \leqslant j \leqslant K\}}$, а
+    где ${M_n = \left\{(i, j):\: i+j-2=n,\, 1 \leqslant i \leqslant L,\,  1 \leqslant j \leqslant K\right\}}$, а
     $\widehat{x}_{ij}$~-- элементы матрицы $\widehat{\mathbf{H}}$.
     Результат такого усреднения $\widetilde{s}_n$ считается оценкой сигнала $s_n$.
 
@@ -248,7 +257,8 @@
     Пусть дан набор из $P$ одномерных комплексных временных рядов длины $N$ каждый, и пусть
     компоненты этих рядов имеют вид
     \begin{equation}
-        s_n^{(p)} = \sum_{j=1}^{R} a_j^{(p)} \exp\{\iu \varphi_j^{(p)}\} \exp\{(-\alpha_j + 2 \pi \iu \omega_j) n\} =
+        s_n^{(p)} = \sum_{j=1}^{R} a_j^{(p)} \exp\left\{\iu \varphi_j^{(p)}\right\}
+        \exp\left\{\left(-\alpha_j + 2 \pi \iu \omega_j\right) n\right\} =
         \sum_{j=1}^{R} c_j^{(p)} z_j^n,
         \label{eq:nd-complex-model}
     \end{equation}
@@ -256,29 +266,22 @@
     \podrazdel{Оценка параметров многомерного сигнала}
     Для оценки параметров $\alpha_j$ и $\omega_j$ многомерного ряда используется алгоритм, аналогичный алгоритму
     для одномерных рядов.
-    На первом шаге каждый из одномерных сигналов $s_n^{(p)}$ преобразуется в траекторную матрицу с параметром $L$
+    На первом шаге каждый из одномерных сигналов $s_n^{(p)}$ преобразуется в траекторную матрицу с длиной окна $L$
     \begin{equation}
-        \mathbf{H}_p =
-        \begin{pmatrix}
-            s_0^{(p)}     & s_1^{(p)} & s_2^{(p)} & \ldots        & s_{K-1}^{(p)} \\
-            s_1^{(p)}     & s_2^{(p)} & \iddots   & \ldots        & \vdots        \\
-            s_2^{(p)}     & \iddots   & \iddots   & \ldots        & \vdots        \\
-            \vdots        & \vdots    & \vdots    & \vdots        & s_{N-2}^{(p)} \\
-            s_{L-1}^{(p)} & \ldots    & \ldots    & s_{N-2}^{(p)} & s_{N-1}^{(p)} \\
-        \end{pmatrix}.\label{eq:nd-hankel-matrix}
+        \mathbf{H}_p = \mathbb{H}_L\left(\left(s_0^{(p)}, s_1^{(p)}, \ldots, s_{N-1}^{(p)}\right)\right).\label{eq:nd-hankel-matrix}
     \end{equation}
-    Полученные ганкелевы матрицы укладываются друг за другом вдоль столбцов в одну блочную матрицу
+    Полученные матрицы укладываются друг за другом вдоль столбцов в одну блочную матрицу
     \begin{equation}
         \mathbf{H} = [\mathbf{H}_1 : \mathbf{H}_2 : \ldots : \mathbf{H}_P],\label{eq:nd-trajectory-matrix}
     \end{equation}
     называемую \emph{траекторной матрицей многомерного ряда}.
     Эта матрица может быть представлена в следующем виде:
     \begin{equation}
-        \mathbf{H} = \mathbf{S}[\mathbf{C}_1 \mathbf{T}^{\mathrm{T}}:\mathbf{C}_2 \mathbf{T}^{\mathrm{T}} :
-        \ldots : \mathbf{C}_P \mathbf{T}^{\mathrm{T}}],\label{eq:nd-vdmd}
+        \mathbf{H} = \mathbf{S}\left[\mathbf{C}_1 \mathbf{T}^{\mathrm{T}}:\mathbf{C}_2 \mathbf{T}^{\mathrm{T}} :
+        \ldots : \mathbf{C}_P \mathbf{T}^{\mathrm{T}}\right],\label{eq:nd-vdmd}
     \end{equation}
     где $\mathbf{S}$ и $\mathbf{T}$~-- матрицы Вандермонда, определённые в~\eqref{eq:1d-vdmd}, а
-    $\mathbf{C}_p = \operatorname{diag}(c_1^{(p)}, c_2^{(p)}, \ldots, c_R^{(p)})$.
+    $\mathbf{C}_p = \operatorname{diag}\left(c_1^{(p)}, c_2^{(p)}, \ldots, c_R^{(p)}\right)$.
     Пусть $\widehat{\mathbf{U}}$~-- матрица, столбцы которой равны первым $R$ сингулярным векторам матрицы $\mathbf{H}$,
     тогда подпространства, порождаемые столбцами $\widehat{\mathbf{U}}$ и $\mathbf{S}$, совпадают, и
     для нахождения оценок $z_k$ можно аналогично одномерному случаю повторить процедуру, описанную уравнением~\eqref{eq:1d-key-eq}.
@@ -297,7 +300,7 @@
     Приведём алгоритм MSSA~\cite{mssa} для выделения сигнала из многомерного временного ряда.
 
     На первом этапе по заданному временному ряду строится траекторная матрица
-    $\mathbf{H}$ в соответствии с~\eqref{eq:nd-hankel-matrix} и~\eqref{eq:nd-trajectory-matrix} с $L > 2R$.
+    $\mathbf{H}$ в соответствии с~\eqref{eq:nd-hankel-matrix} и~\eqref{eq:nd-trajectory-matrix} с $L \geqslant 2R$.
     Затем рассматривается SVD этой матрицы в виде~\eqref{eq:1d-complex-svd}, где
     ${\widehat{\mathbf{U}} \in \mathbb{C}^{L\times 2R}}$, ${\mathbf{U}_0 \in \mathbb{C}^{L\times (L-2R)}}$,
     $\widehat{\mathbf{\Sigma}} \in \mathbb{C}^{2R\times 2R}$, $\mathbf{\Sigma}_0 \in \mathbb{C}^{(L-2R)\times (KP-2R)}$,
@@ -316,13 +319,13 @@
     Пусть дан одномерный временной ряд вида~\eqref{eq:1d-real-model}.
     Вместо траекторной матрицы предлагается строить по ряду \emph{траекторный тензор} $\mathcal{H}$ следующим образом:
     выбираются два параметра $I, L \geqslant 2R$ такие, что $J \geqslant 2R$ ($J = N- I - L + 2$), и тогда
-    компонент тензора $h_{i l j}$ берётся равным $s_{i+l+j-3}$.
+    элемент тензора $h_{i l j}$ берётся равным $s_{i+l+j-3}$.
     Другими словами, слой траекторного тензора с номером $j$ получается как траекторная матрица,
-    построенная по части исходного ряда от элемента $s_{j-1}$ до $s_{j+I+L-3}$ с параметром $I$.
-
-
-
-
+    построенная по части исходного ряда $\left(s_{j-1}, s_j, \ldots, s_{j+I+L-3}\right)$ с длиной окна $I$:
+    \begin{equation}
+        \mathcal{H}_{\cdot \cdot j} = \mathbb{H}_I \left(\left(s_{j-1}, s_j, \ldots, s_{j+I+L-3}  \right)\right).
+        \label{eq:trajectory-tensor}
+    \end{equation}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
