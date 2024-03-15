@@ -300,7 +300,7 @@
     Приведём алгоритм MSSA~\cite{mssa} для выделения сигнала из многомерного временного ряда.
 
     На первом этапе по заданному временному ряду строится траекторная матрица
-    $\mathbf{H}$ в соответствии с~\eqref{eq:nd-hankel-matrix} и~\eqref{eq:nd-trajectory-matrix} с $L \geqslant 2R$.
+    $\mathbf{H}$ в соответствии с~\eqref{eq:nd-hankel-matrix} и~\eqref{eq:nd-trajectory-matrix} с длиной окна $L \geqslant 2R$.
     Затем рассматривается SVD этой матрицы в виде~\eqref{eq:1d-complex-svd}, где
     ${\widehat{\mathbf{U}} \in \mathbb{C}^{L\times 2R}}$, ${\mathbf{U}_0 \in \mathbb{C}^{L\times (L-2R)}}$,
     $\widehat{\mathbf{\Sigma}} \in \mathbb{C}^{2R\times 2R}$, $\mathbf{\Sigma}_0 \in \mathbb{C}^{(L-2R)\times (KP-2R)}$,
@@ -319,11 +319,11 @@
     Пусть дан одномерный временной ряд вида~\eqref{eq:1d-real-model}.
     Вместо траекторной матрицы предлагается строить по ряду \emph{траекторный тензор} $\mathcal{H}$ следующим образом:
     выбираются два параметра $I, L \geqslant 2R$ такие, что $J \geqslant 2R$ ($J = N- I - L + 2$), и тогда
-    элемент тензора $h_{i l j}$ берётся равным $s_{i+l+j-3}$.
+    элемент тензора $h_{i l j}$ берётся равным $x_{i+l+j-3}$.
     Другими словами, слой траекторного тензора с номером $j$ получается как траекторная матрица,
-    построенная по части исходного ряда $\left(s_{j-1}, s_j, \ldots, s_{j+I+L-3}\right)$ с длиной окна $I$:
+    построенная по части исходного ряда $\left(x_{j-1}, x_j, \ldots, x_{j+I+L-3}\right)$ с длиной окна $I$:
     \begin{equation}
-        \mathcal{H}_{\cdot \cdot j} = \mathbb{H}_I \left(\left(s_{j-1}, s_j, \ldots, s_{j+I+L-3}  \right)\right).
+        \mathcal{H}_{\cdot \cdot j} = \mathbb{H}_I \left(\left(x_{j-1}, x_j, \ldots, x_{j+I+L-3}  \right)\right).
         \label{eq:trajectory-tensor}
     \end{equation}
     На следующем шаге траекторный тензор представляется в виде своего сингулярного разложения высшего порядка
@@ -347,7 +347,12 @@
 %            + &(i_2 - 1)I_3 I_4\ldots I_{n-1} + \dots + i_{n-1}.
 %        \end{aligned}
     \]
-    \Figure{0.8\textwidth}{images/unfolding.eps}{
+%    \WrapFigure{10}{0.4\textwidth}{\textwidth}{images/unfolding.eps}
+%    {Развёртка тензора $\mathcal{A}$ размерности $I_1\times I_2 \times I_3$ в матрицы $\mathbf{A}_{(1)},\,
+%    \mathbf{A}_{(2)},\, \mathbf{A}_{(3)}$ размерностей
+%        $I_1\times (I_2 I_3),\, I_2\times (I_3 I_1),\, I_3\times (I_1 I_2)$
+%        соответственно \label{fig:unfolding}}
+    \Figure{0.7\textwidth}{images/unfolding.eps}{
         Развёртка тензора $\mathcal{A}$ размерности $I_1\times I_2 \times I_3$ в матрицы $\mathbf{A}_{(1)},\,
         \mathbf{A}_{(2)},\, \mathbf{A}_{(3)}$ размерностей
         $I_1\times (I_2 I_3),\, I_2\times (I_3 I_1),\, I_3\times (I_1 I_2)$
@@ -374,6 +379,32 @@
     \end{equation}
     В работе~\cite{hosvd} показано, что хоть такое приближение и не является оптимальным приближением по множеству
     тензоров с $n$-рангами, равными $2R$, оно является довольно точным, так как ошибка приближения ограничена сверху.
+
+    Последний шаг алгоритма~-- восстановление, заключается в усреднении полученного тензора $\widehat{\mathcal{H}}$
+    вдоль побочных <<плоскостей>> ${i+l+j = \operatorname{const}}$:
+    \begin{equation}
+        \widetilde{s}_n = \frac{1}{|M_n|} \sum_{i,l,j\in M_n} \widehat{h}_{ilj}, \quad n=0,1,\ldots, N-1,
+        \label{eq:tens-averaging}
+    \end{equation}
+    где $M_n = \left\{ (i,l,j):\: i+l+j-3 = n,\, 1\leqslant i \leqslant I,\, 1\leqslant l \leqslant L,\,
+    1 \leqslant j \leqslant J\right\}$, а $\widehat{h}_{ilj}$~-- элементы тензора $\widehat{\mathcal{H}}$.
+    Результат такого усреднения $\widetilde{s}_n$ считается оценкой сигнала $s_n$.
+
+    \podrazdel{High-Order MSSA}
+    Пусть дан многомерный временной ряд вида~\eqref{eq:nd-real-model}.
+    На первом шаге выбирается длина окна $L \geqslant 2R$ такая, что
+    $K = N-L+1 \geqslant 2R$, и по этому ряду строится
+    \emph{траекторный тензор многомерного ряда} $\mathcal{H}$ так,
+    что его элемент $h_{lkp}$ равен $x_{l+k-2}^{(p)}$, где $1\leqslant l \leqslant L$,
+    $1 \leqslant k \leqslant K$, $1\leqslant p \leqslant P$.
+    То есть слой траекторного тензора с номером $p$ получается как траекторная матрица,
+    построенная по ряду с номером $p$ с длиной окна $L$:
+    \begin{equation}
+        \mathcal{H}_{\cdot \cdot p} = \mathbb{H}_L\left(
+        \left( x_0^{(p)}, x_1^{(p)}, \ldots x_{N-1}^{(p)} \right)
+        \right).\label{eq:nd-trajectory-tensor}
+    \end{equation}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %    \razdel{Самое полезное замечание для <<чайников>> :)} ПРОСТО возьмите исходный файл
@@ -830,7 +861,7 @@
 
 %%%%%%%%%%%%%%% Статья в журнале Вестник СПбГУ. Номер серии теперь НЕ ПИШЕТСЯ!!!!! Примеры ссылко на статьи в последее время публикуются в самих статьях, СМ. сайт: http://vestnik.spbu.ru/s10.html и далее, например: http://vestnik.spbu.ru/html18/s10/s10v4/s10v4.html и далее, например: http://vestnik.spbu.ru/html18/s10/s10v4/01.pdf
 % Номер выпуск оформляется символом номера - \№ !!!!!!!!!!!!!!
-        \bibitem{papy-esprit} Papy~J.\:M., De~Lathauwer~L., Van~Huffel~S. Exponential data fitting using multilinear algebra: the single-channel and multi-channel case // Numerical Linear Algebra with Applications. 2005. №~8. P.~809--826.
+        \bibitem{papy-esprit}Papy~J.\:M., De~Lathauwer~L., Van~Huffel~S. Exponential data fitting using multilinear algebra: the single-channel and multi-channel case // Numerical Linear Algebra with Applications. 2005. №~8. P.~809--826.
         \bibitem{ESPRIT} Roy~R., Kailath~T. ESPRIT-estimation of signal parameters via rotational invariance techniques // IEEE Transactions on Acoustics, Speech, and Signal Processing. 1989. №7. P.~984--995.
         \bibitem{ssa} Golyandina~N., Nekrutkin~V., Zhigljavsky~A.\: A. Analysis of Time Series Structure - SSA and Related Techniques. Chapman and Hall/CRC, 2001. 320~p.
         \bibitem{mssa} Golyandina~N., Zhigljavsky~A. Singular Spectrum Analysis for Time Series. Springer Berlin, Heidelberg, 2020. 146~p.
