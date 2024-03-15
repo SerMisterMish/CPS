@@ -326,7 +326,54 @@
         \mathcal{H}_{\cdot \cdot j} = \mathbb{H}_I \left(\left(s_{j-1}, s_j, \ldots, s_{j+I+L-3}  \right)\right).
         \label{eq:trajectory-tensor}
     \end{equation}
+    На следующем шаге траекторный тензор представляется в виде своего сингулярного разложения высшего порядка
+    (HOSVD)~\cite{hosvd}:
+    \begin{equation}
+        \mathcal{H} = \sum_{i=1}^{I} \sum_{l=1}^{L} \sum_{j=1}^{J} c_{ilj} U^{(1)}_i \circ U^{(2)}_l \circ U^{(3)}_j,
+        \label{eq:1d-hosvd}
+    \end{equation}
+    где матрицы $\mathbf{U}_k = \left[ U^{(k)}_1, U^{(k)}_2, \ldots, U^{(k)}_{I_k} \right]$
+    ($I_1=I,\, I_2=L,\, I_3=J$) ортонормированные, а $\circ$ обозначает внешнее произведение векторов.
+    \Definition \emph{Развёрткой} тензора $\mathcal{A}\in \mathbb{C}^{I_1 \times I_2 \times \ldots \times I_M}$
+    по измерению $n$ называют матрицу $\mathbb{A}_{(n)}\in
+    \mathbb{C}^{I_n \times I_{n+1}I_{n+2}\ldots I_{M}I_{1}I_{2}\ldots I_{n-1}}$, в которой элемент исходного тензора
+    $a_{i_1 i_2\ldots i_M}$ содержится в строке $i_n$ и столбце с номером
+    \[
+        1 + \sum_{\substack{k=1 \\ k\ne n}}^{M} \left[ (i_k-1) \prod_{\substack{m=1 \\ m\ne n}}^{k-1} I_m \right].
+%        \begin{aligned}
+%            &(i_{n+1} - 1)I_{n+2}I_{n+3}\ldots I_{M}I_1 I_2\ldots I_{n-1} \\
+%            + &(i_{n+2} - 1)I_{n+3}I_{n+4}\ldots I_M I_1 I_2 \ldots I_{n-1} + \dots \\
+%            + &(i_M - 1)I_1 I_2 \ldots I_{n-1} + (i_1 - 1)I_2 I_3\ldots I_{n-1}\\
+%            + &(i_2 - 1)I_3 I_4\ldots I_{n-1} + \dots + i_{n-1}.
+%        \end{aligned}
+    \]
+    \Figure{0.8\textwidth}{images/unfolding.eps}{
+        Развёртка тензора $\mathcal{A}$ размерности $I_1\times I_2 \times I_3$ в матрицы $\mathbf{A}_{(1)},\,
+        \mathbf{A}_{(2)},\, \mathbf{A}_{(3)}$ размерностей
+        $I_1\times (I_2 I_3),\, I_2\times (I_3 I_1),\, I_3\times (I_1 I_2)$
+        соответственно \label{fig:unfolding}}
+%    \begin{figure}[!h]
+%            \centering
+%            \includegraphics[width=\textwidth]{/images/unfolding}
+%            \caption{Развёртка тензора $\mathcal{A}$ размерности $I_1\times I_2 \times I_3$ в матрицы $\mathbf{A}_{(1)},\,
+%            \mathbf{A}_{(2)},\, \mathbf{A}_{(3)}$ размерностей $I_1\times (I_2 I_3),\, I_2\times (I_3 I_1),\, I_3\times (I_1 I_2)$
+%                соответственно}
+%            \label{fig:unfolding}
+%        \end{figure}
+    Визуализация развёрток тензора с тремя измерениями приведена на рисунке~\ref{fig:unfolding}.
+    \Definition \emph{$n$-рангом} тензора $\mathcal{A}$ называют ранг развёртки этого тензора по измерению $n$.
 
+    Если во временном ряде отсутствует шум, то все $n$-ранги траекторного тензора $\mathcal{H}$ будут равны $2R$
+    и верхние пределы суммирования во всех суммах в представлении~\eqref{eq:1d-hosvd} будут равны $2R$.
+    В случае, если во временном ряде присутствует шум, то у траекторного тензора будут максимальные $n$-ранги,
+    и тогда строится приближение траекторного тензора
+    \begin{equation}
+        \widehat{\mathcal{H}} = \sum_{i=1}^{2R} \sum_{l=1}^{2R}
+        \sum_{j=1}^{2R} c_{ilj} U^{(1)}_i \circ U^{(2)}_l \circ U^{(3)}_j.
+        \label{eq:1d-cropped-hosvd}
+    \end{equation}
+    В работе~\cite{hosvd} показано, что хоть такое приближение и не является оптимальным приближением по множеству
+    тензоров с $n$-рангами, равными $2R$, оно является довольно точным, так как ошибка приближения ограничена сверху.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %    \razdel{Самое полезное замечание для <<чайников>> :)} ПРОСТО возьмите исходный файл
@@ -778,6 +825,7 @@
 
 %%%% Список литературы должен быть оформлен по следующему образцу:
 
+
     \begin{thebibliography}{40}
 
 %%%%%%%%%%%%%%% Статья в журнале Вестник СПбГУ. Номер серии теперь НЕ ПИШЕТСЯ!!!!! Примеры ссылко на статьи в последее время публикуются в самих статьях, СМ. сайт: http://vestnik.spbu.ru/s10.html и далее, например: http://vestnik.spbu.ru/html18/s10/s10v4/s10v4.html и далее, например: http://vestnik.spbu.ru/html18/s10/s10v4/01.pdf
@@ -786,6 +834,7 @@
         \bibitem{ESPRIT} Roy~R., Kailath~T. ESPRIT-estimation of signal parameters via rotational invariance techniques // IEEE Transactions on Acoustics, Speech, and Signal Processing. 1989. №7. P.~984--995.
         \bibitem{ssa} Golyandina~N., Nekrutkin~V., Zhigljavsky~A.\: A. Analysis of Time Series Structure - SSA and Related Techniques. Chapman and Hall/CRC, 2001. 320~p.
         \bibitem{mssa} Golyandina~N., Zhigljavsky~A. Singular Spectrum Analysis for Time Series. Springer Berlin, Heidelberg, 2020. 146~p.
+        \bibitem{hosvd} De~Lathauwer~L., De~Moor~B., Vandewalle~J. A Multilinear Singular Value Decomposition // SIAM Journal on Matrix Analysis and Applications. 2000. №4. P. 1253-1278.
 %        \bibitem{Abb} Аббасов~М.\:Э. Исчисление коэкзостеров второго порядка // Вестник Санкт-Петербургского университета. Прикладная математика. Информатика. Процессы управления. 2018. Т. 14. №~4. С. 276--285.
 %        \bibitem{khar2} Харитонов~В.\:Л. Функционалы Ляпунова с заданной производной: Матрицы Ляпунова // Вестник Санкт-Петербургского университета. Прикладная математика. Информатика. Процессы управления. 2005. №~2. С.~200--209.
 
