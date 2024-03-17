@@ -121,7 +121,9 @@ signest.sc <- function(I, L.t, L.m) {
   if (!missing(L.m)) {
     hm <- hankel(s.n, L.m)
     hm.svd <- svd(hm, r, r)
-    hat.hm <- hm.svd$u %*% diag(hm.svd$d[1:r]) %*% Conj(t(hm.svd$v))
+    hat.hm <- hm.svd$u %*%
+      diag(hm.svd$d[1:r]) %*%
+      Conj(t(hm.svd$v))
     estimates[1,] <- hankel(hat.hm)
   }
 
@@ -139,5 +141,24 @@ signest.sc <- function(I, L.t, L.m) {
 
 R <- 1000
 signal.tens <- t(s %o% rep(1, 2)) %o% rep(1, R)
-system.time({ se.comp.res <- replicate(R, signest.sc(I = 14, L.t = 8, L.m = 16)) })
+system.time({ se.comp.res <- replicate(R, signest.sc(I = 4, L.t = 9, L.m = 13)) })
 rowMeans(sqrt(apply(abs(se.comp.res - signal.tens)^2, 1:2, mean)))
+# R <- 400
+# signal.tens <- s %o% rep(1, R)
+# res <- numeric(length = length(4:(N-r+2)))
+# for (L in 4:(N-r+2)) {
+#   set.seed(1)
+#   se.comp.res <- replicate(R, signest.sc(L.m = L))[1,,]
+#   res[L-3] <- mean(sqrt(rowMeans(abs(se.comp.res - signal.tens)^2)))
+# }
+# which.min(res)
+
+# res <- matrix(nrow = length(4:(N - 2 * r + 3)), ncol = length(4:(N - 2 * r + 3)))
+# for (I in 4:(N - 2 * r + 3)) {
+#   for (L in 4:(N - I - r + 3)) {
+#     set.seed(1)
+#     se.comp.res <- replicate(R, signest.sc(I = I, L.t = L))[2, ,]
+#     res[I-3, L - 3] <- mean(sqrt(rowMeans(abs(se.comp.res - signal.tens)^2)))
+#   }
+# }
+# which(res == min(res, na.rm = TRUE), arr.ind = TRUE)

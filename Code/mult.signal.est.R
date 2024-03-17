@@ -113,8 +113,8 @@ r <- 4
 r3 <- 2
 # r <- 2
 SNR <- 30
-sigma <- snr.to.sd(s, SNR)
-# sigma <- 0.03
+sigma <- mean(sapply(1:Q, function(i) snr.to.sd(s[, i], SNR)))
+# sigma <- 0.02
 
 mult.signest.sc <- function(L, Mat = TRUE, Tens = TRUE) {
   # s.n <- s + rcnorm(N + 1, var = sigma^2)
@@ -123,8 +123,8 @@ mult.signest.sc <- function(L, Mat = TRUE, Tens = TRUE) {
   estimates <- array(dim = c(nrow(s), Q, 2))
 
   if (Mat) {
-    s.mssa <- ssa(s.n, L = 13, kind = "mssa")
-    estimates[,,1] <- reconstruct(s.mssa, groups = list(1:r))[[1]]
+    s.mssa <- ssa(s.n, L = L, kind = "mssa")
+    estimates[, , 1] <- reconstruct(s.mssa, groups = list(1:r))[[1]]
   }
 
   if (Tens) {
@@ -134,15 +134,35 @@ mult.signest.sc <- function(L, Mat = TRUE, Tens = TRUE) {
     capture.output({ ht.hooi <- rTensor::tucker(ht, ranks = c(r, r, r3)) })
     # ht.hat <- ttl(ht.hosvd$Z, ht.hosvd$U, 1:3)
     ht.hat <- ttl(ht.hooi$Z, ht.hooi$U, 1:3)
-    estimates[,,2] <- apply(ht.hat@data, 3, hankel)
+    estimates[, , 2] <- apply(ht.hat@data, 3, hankel)
   }
   estimates
 }
 
 R <- 1000
 signal.tens <- s %o% rep(1, R)
-system.time({ se.mult.comp.res <- replicate(R, mult.signest.sc(L = 13), simplify = "array") })
-mat.res <- se.mult.comp.res[,,1,]
-tens.res <- se.mult.comp.res[,,2,]
+L.mat <- 22; L.tens <- 20
+se.mult.comp.res <- list()
+system.time({
+  set.seed(1)
+  se.mult.comp.res$mat <- replicate(R, mult.signest.sc(L = L.mat, Tens = FALSE), simplify = "array")[,,1,]
+  set.seed(1)
+  se.mult.comp.res$tens <- replicate(R, mult.signest.sc(L = L.tens, Mat = FALSE), simplify = "array")[,,2,]
+})
+mat.res <- se.mult.comp.res$mat
+tens.res <- se.mult.comp.res$tens
 mean(rowMeans(sqrt(apply(abs(mat.res - signal.tens)^2, 1:2, mean))))
 mean(rowMeans(sqrt(apply(abs(tens.res - signal.tens)^2, 1:2, mean))))
+
+# R <- 1000
+# res2 <- list(mat = numeric(length(4:(N - r + 1))), tens = numeric(length(4:(N - r + 1))))
+# for (L in 4:(N - r + 2)) {
+#   set.seed(1)
+#   system.time({ se.mult.comp.res <- replicate(R, mult.signest.sc(L = L), simplify = "array") })
+#   mat.res <- se.mult.comp.res[, , 1,]
+#   tens.res <- se.mult.comp.res[, , 2,]
+#   res2$mat[L - 3] <- mean(rowMeans(sqrt(apply(abs(mat.res - signal.tens)^2, 1:2, mean))))
+#   res2$tens[L - 3] <- mean(rowMeans(sqrt(apply(abs(tens.res - signal.tens)^2, 1:2, mean))))
+# }
+# which.min(res2$mat)
+# which.min(res2$tens)
