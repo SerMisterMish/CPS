@@ -29,6 +29,7 @@
 \usepackage{PMSTYLE}
 
 \newcommand{\iu}{\mathrm{i}}
+\newcommand{\rank}{\operatorname{rank}}
 
 \begin{document}
     \hyphenation{СПбГУ}
@@ -49,7 +50,7 @@
     \author{Хромов~Н.\:А., Голяндина~Н.\:Э.}
 
 %%%%%%%%%   Название статьи
-    \title{Правила оформления статей\\ для ежегодной научной конференции \\ Процессы управления и устойчивость}
+    \title{Тензорные HO-SSA и HO-MSSA для выделения сигнала}
 
     \renewcommand{\thefootnote}{ }
     {\footnotetext{{\it Хромов Никита Андреевич} -- студент, Санкт-Петербургский государственный университет;
@@ -58,7 +59,7 @@
     e-mail: neg99@mail.ru, тел.: +7(000)000-00-00}}
 
 % если по ГРАНТУ
-    {\footnotetext{Работа выполнена при финансовой поддержке РФФИ, проект № 12-345-6}} % и/или СПбГУ, НИР № 0.00.000.0000}}
+    {\footnotetext{Работа выполнена при финансовой поддержке РНФ, проект № 12-345-6}} % и/или СПбГУ, НИР № 0.00.000.0000}}
 
     \maketitle
 
@@ -86,47 +87,80 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     \razdel{Введение}
-    SSA (Singular Spectrum Analysis)~\cite{ssa} является распространённым~\cite{ezhov-ssa} методом анализа временных рядов.
+    SSA (Singular Spectrum Analysis)~\cite{ssa} является распространённым
+    методом анализа и прогноза временных рядов.
     Этот метод используется, в частности, для выделения сигнала и выделения тренда и периодических компонент из временного ряда.
+    Хотя в последнее время получили распространение методы машинного обучения (например, в~\cite{ezhov-ssa} рассматривается
+    задача прогноза с предобработкой временного ряда методом SSA перед применением нейронных сетей для прогноза),
+    задача анализа одного недлинного временного ряда не теряет своей актуальности.
+    Ряд методов рассматривает при этом конкретные модели для сигнала/тренда (например, в~\cite{Vestnik}
+    рассматривается полиномиальная регрессия).
+    Метод SSA не требует задания параметрической модели, поэтому он более универсальный.
+    Однако, при этом метод SSA хорошо работает и с моделью в виде суммы комплексных экспонент или
+    в виде суммы экспоненциально-модулированных гармоник в вещественном случае,
+    что позволяет оценивать параметры в этих моделях.
+
     Метод SSA основан на сингулярном разложении особой матрицы построенной по временному ряду, называемой траекторной.
-    Обобщением метода SSA на случай многомерных сигналов является метод MSSA~\cite{mssa}.
-    Для оценки параметров временного ряда в параметрической модели используется метод ESPRIT
+    Обобщение метода SSA на случай многомерных сигналов называется MSSA~\cite{mssa}.
+    Для оценки параметров временного ряда в параметрической модели метода SSA используется метод ESPRIT
     (Estimation of signal parameters via rotational invariance techniques)~\cite{ESPRIT}, который также основан на
-    сингулярном разложении траекторной матрицы.
+    сингулярном разложении траекторной матрицы и относится к классу методов, основанных на подпространстве сигнала.
     В работе~\cite{papy-esprit} предлагается модификация метода ESPRIT, основанная на переходе от траекторной матрицы и
     матричного сингулярного разложения к траекторному тензору и тензорному сингулярному разложению, и
-    утверждается преимущество такой модификации.
-    В данной работе мы рассматриваем аналогичные модификации методов SSA и MSSA для выделения сигнала
-    из временных рядов в непараметрической модели.
-    Были проведены сравнения методов SSA и MSSA с их тензорными модификациями на временных рядах,
+    демонстрируется преимущество такой модификации при оценке параметров, в частности, частот.
+    В данной работе мы рассматриваем аналогичные тензорные модификации методов SSA и MSSA
+    (HO-SSA и HO-MSSA, где HO --- сокращение от high order) для выделения сигналов
+    из временных рядов.
+    Целью работы является сравнение методов SSA и MSSA с их тензорными модификациями на временных рядах,
     аналогичных тем, что были рассмотрены в~\cite{papy-esprit}.
-    Было выявлено преимущество тензорной модификации в случае многомерного сигнала, однако преимущества
-    для случая одномерного сигнала установить не удалось.
 
-    \razdel{Постановка задачи для одномерного сигнала}
+    В разделах ... мы коротко опишем методы SSA и MSSA, а в разделах ... их тензорные модификации.
+    Описание будет дано в более общей комплексной форме, хотя применять метод мы будем в вещественном случае.
+
+    Так как для выделения сигнала нужно знать его ранг, то в разделе ... обсуждается ранг сигнала в контексте тензорных
+    модификаций HO-SSA и HO-MSSA.
+
+    В разделе ... описаны результаты численных сравнений.
+
+    \razdel{Описание модели}
+    Опишем рассматриваемые одномерные и многомерные комплексные сигналы.
     Пусть дан одномерный временной ряд, состоящий из $N$ комплексных значений $s_n$, $n=0, 1,\ldots, N-1$,
     и пусть этот ряд представим в виде конечной суммы $R$ экспоненциально-модулированных комплексных гармоник
     \begin{equation}
-        s_n = \sum_{j=1}^{R} a_j \exp\left\{\iu \varphi_j\right\}
-        \exp\left\{\left(-\alpha_j + 2 \pi \iu \omega_j\right) n\right\}.\label{eq:1d-complex-model}
+        s_n = \sum_{j=1}^{R} a_j e^{ -\alpha_j n }
+        e^{\iu \left( 2 \pi \omega_j n + \varphi_j\right)}.\label{eq:1d-complex-model}
     \end{equation}
-    Параметрами модели являются амплитуды $a_j$, фазы $\varphi_j$, частоты $\omega_j$ и степени затухания $\alpha_j$.
-    Приведём постановки задач выделения сигнала и оценки параметров для случая одномерного сигнала, а также
-    методы их решения.
+    Параметрами модели являются амплитуды $a_j \in \mathbb{R}\setminus\{0\}$, фазы ${\varphi_j \in [0, 2\pi)}$,
+    частоты $\omega_j\in [0, 1/2]$ и степени затухания $\alpha_j \in \mathbb{R}$.
 
-    \podrazdel{Оценка параметров сигнала}
-    Рассматривается задача оценки параметров модели $\omega_j$ и $\alpha_j$ в ряде, являющимся суммой
-    сигнала~\eqref{eq:1d-complex-model} и некоторого шума.
-    Приведём стандартный матричный метод решения этой задачи, основанный на методе ESPRIT~\cite{ESPRIT}.
-
-    Ряд~\eqref{eq:1d-complex-model} может быть представлен в виде
+    Модель многомерного сигнала имеет вид набора $P$ одномерных сигналов вида~\eqref{eq:1d-complex-model}, то есть
     \begin{equation}
-        s_n = \sum_{j=1}^{R} c_j z_j^n,\label{eq:1d-simple-model}
+        s_n^{(p)} = \sum_{j=1}^{R(p)} a_j^{(p)} e^{ -\alpha_j^{(p)} n }
+        e^{\iu \left( 2 \pi \omega_j^{(p)} n + \varphi_j^{(p)}\right)},
+        \label{eq:nd-complex-model-general}
     \end{equation}
-    где $c_j = a_j \exp\left\{\iu \varphi_j\right\}$, $z_j = \exp\left\{-\alpha_j + 2 \pi \iu \omega_j\right\}$.
-    Оценка параметров $\omega_j$ и $\alpha_j$ равносильна оценке значений $z_j$, поэтому в дальнейшем будем находить
-    оценки именно для них.
-    \Definition \emph{Оператором вложения с длиной окна $L$} будем называть оператор, преобразующий временной ряд
+    где $n=0,1,\ldots, N-1$, а $p$ ($1\leqslant p \leqslant P$) отвечает за номер одномерного временного ряда.
+    Однако мы будем рассматривать частный случай такой модели, при котором параметры $R(p)$, $\omega_j^{(p)}$ и
+    $\alpha_j^{(p)}$ не зависят от номера ряда $p$:
+    \begin{equation}
+        s_n^{(p)} = \sum_{j=1}^{R} a_j^{(p)} e^{ -\alpha_j n }
+        e^{\iu \left( 2 \pi \omega_j n + \varphi_j^{(p)}\right)}.
+        \label{eq:nd-complex-model}
+    \end{equation}
+    Это обосновано тем, что такая модель применяется в спектроскопии ядерного магнитного резонанса~\cite{NMR}.
+    Кроме того, в работе~\cite{papy-esprit} используется именно этот частный случай модели.
+
+    \Remark[n]~В общем случае можно рассматривать модели временных рядов вида~\eqref{eq:1d-complex-model} и~\eqref{eq:nd-complex-model},
+    в которых амплитуды являются ненулевыми многочленами, однако этот случай выходит за рамки этой работы.
+
+    \razdel{Ряды конечного ранга и тензорные ранги}
+    Одними из ключевых объектов в теории SSA являются \emph{ряды конечного ранга}.
+    В данном разделе мы изложим теорию, касающуюся рядов конечного ранга, а затем рассмотрим теорию тензорных рангов,
+    и приведём утверждения, связывающие ранги рядов с рангами определенных тензоров.
+
+    \podrazdel{Ряды конечного ранга}
+    Введём несколько вспомогательных определений.
+    \Definition~\emph{Оператором вложения с длиной окна $L$} будем называть отображение, преобразующее временной ряд
     $\left(x_0, x_1, \ldots, x_{N-1}\right)$ в ганкелеву матрицу размерности $L\times K$ ($K = N-L+1$) следующим образом:
     \begin{equation}
         \mathbb{H}_L\left( \left(x_0, x_1, \ldots, x_{N-1}\right) \right) =
@@ -138,192 +172,197 @@
             x_{L-1} & \ldots  & \ldots  & x_{N-2} & x_{N-1} \\
         \end{pmatrix}.\label{eq:hankelization-operator}
     \end{equation}
+    \Definition~\emph{Траекторной матрицей одномерного временного ряда $(x_0, x_1, \ldots, x_{N-1})$ с длиной окна $L$}
+    называется матрица $\mathbf{H}$, полученная применением оператора вложения с длиной окна $L$ к данному временному ряду.
+    \Definition~Ряд $(x_0, x_1, \ldots, x_{N-1})$ называется \emph{рядом конечного ранга $d$} ($d<N/2$), если для любой длины
+    окна $L < N$ такой, что $\min(L, K) \geqslant d$, траекторная матрица этого ряда, построенная по данной
+    длине окна, имеет ранг $d$.
+    \Example~Временной ряд вида~\eqref{eq:1d-complex-model} имеет ранг равный количеству уникальных пар
+    $(\alpha_j, \omega_j)$ по всем $j$~\cite{Stepanov}.
 
-    Первый этап алгоритма -- вложение, заключается в выборе длины окна $L\geqslant R$ так,
-    чтобы $K = N-L+1 \geqslant R$, и преобразовании имеющегося временного ряда в ганкелеву матрицу с помощью
+    \Definition~Рассмотрим многомерный временной ряд
+    \[
+        \left(s_0^{(p)}, s_1^{(p)}, \ldots, s_{N-1}^{(p)}\right), \quad p = 1, 2, \ldots, P.
+    \]
+    Построим для каждого одномерного ряда $\left(s_n^{(p)}\right)_{n=0}^{N-1}$ траекторную матрицу с длиной окна
+    $L$:
+    \[
+        \mathbf{H}_p = \mathbb{H}_L\left( s_0^{(p)}, s_1^{(p)}, \ldots, s_{N-1}^{(p)} \right).
+    \]
+    Тогда \emph{траекторной матрицей данного многомерного ряда с длиной окна $L$} называется матрица $\mathbf{H}$, полученная
+    приписыванием матриц $\mathbf{H}_p$ друг за другом по столбцам:
+    \begin{equation}
+        \mathbf{H} = [\mathbf{H}_1 : \mathbf{H}_2 : \ldots : \mathbf{H}_P].\label{eq:nd-trajectory-matrix}
+    \end{equation}
+    \Remark[n]~Ранг многомерного ряда определяется аналогично рангу одномерного ряда с заменой траекторной матрицы
+    одномерного ряда на траекторную матрицу многомерного ряда.
+    \Example~Многомерный временной ряд вида~\eqref{eq:nd-complex-model-general} имеет ранг равный количеству уникальных
+    пар $(\alpha_j^{(p)}, \omega_j^{(p)})$ по всем $j$ и $p$~\cite{Stepanov}.
+    \Example~Так как $\cos(2 \pi \omega n + \varphi_n) =
+    \left( e^{2\pi \iu \omega n + \varphi_n} + e^{-2\pi \iu \omega n - \varphi_n} \right) / 2$,
+    то ранг ряда
+    \begin{equation}
+        s_n = A e^{\alpha n} \cos(2\pi \omega n + \varphi)\label{eq:exp-modul-cos}
+    \end{equation}
+    с $A\ne 0$ равен $2$, если $\omega \in (0, 1/2)$ и равен $1$, если $\omega \in \{0, 1/2\}$.
+    \Example~Пусть ряд представляется в виде суммы $M$ экспоненциально-модулированных гармоник
+    \begin{equation}
+        s_n = \sum_{j=1}^{M} A_j e^{\alpha_j n} \cos(2\pi \omega_j n + \varphi_j),\label{eq:exp-modul-cos-sum}
+    \end{equation}
+    где $A_j \ne 0$.
+    Обозначим
+    \[
+        r(\omega) =
+        \begin{cases}
+            1, & \omega \in \{0, 1/2\},\\
+            2, & \text{иначе},
+        \end{cases}
+    \]
+    тогда ранг ряда~\eqref{eq:exp-modul-cos-sum} равен сумме $\sum_{(\omega, \alpha) \in \Omega} r(\omega)$, где
+    $\Omega$~-- множество уникальных пар $(\omega_j, \alpha_j)$ по всем $j$.
+
+    \podrazdel{Тензорные ранги}
+    Введём вспомогательные определения.
+    \Definition~\emph{Траекторным тензором одномерного временного ряда $(x_0, x_1, \ldots, x_{N-1})$ с длинами окна $I$ и $L$}
+    называется
+    тензор $\mathcal{H}\in \mathbb{C}^{I\times L \times J}$ ($J = N-I-L+2$), элемент $h_{ilj}$ которого равен
+    $x_{i+l+j-3}$.
+    Другими словами, слой траекторного тензора с номером $j$ получается как траекторная матрица,
+    построенная по части исходного ряда $\left(x_{j-1}, x_j, \ldots, x_{j+I+L-3}\right)$ с длиной окна $I$:
+    \begin{equation}
+        \mathcal{H}_{\cdot \cdot j} = \mathbb{H}_I \left(\left(x_{j-1}, x_j, \ldots, x_{j+I+L-3}  \right)\right).
+        \label{eq:trajectory-tensor}
+    \end{equation}
+    \Definition~\emph{Развёрткой} тензора $\mathcal{A}\in \mathbb{C}^{I_1 \times I_2 \times \ldots \times I_M}$
+    по измерению $n$ называют матрицу $\mathbb{A}_{(n)}\in
+    \mathbb{C}^{I_n \times I_{n+1}I_{n+2}\ldots I_{M}I_{1}I_{2}\ldots I_{n-1}}$, в которой элемент исходного тензора
+    $a_{i_1 i_2\ldots i_M}$ содержится в строке $i_n$ и столбце с номером
+    \[
+        1 + \sum_{\substack{k=1 \\ k\ne n}}^{M} \left[ (i_k-1) \prod_{\substack{m=1 \\ m\ne n}}^{k-1} I_m \right].
+    \]
+    \Definition~\emph{$n$-рангом} тензора $\mathcal{A}$ называют ранг развёртки этого тензора по измерению $n$.
+    Обозначение: $\rank_n(\mathcal{A})$.
+
+    Основываясь на свойствах сингулярного разложения высшего порядка (HOSVD), можно доказать следующее утверждение,
+    позволяющее перенести понятие одномерного ряда конечного ранга на язык траекторных тензоров этого ряда.
+    \Statement{(Об $n$-рангах траекторного тензора одномерного ряда конечного ранга)}
+    Пусть временной ряд $(x_0, x_1, \ldots, x_{N-1})$ имеет ранг $d$ ($d < N/2$) в терминах SSA,
+    тогда для любых значений параметров $I$ и $L$ таких, что
+    \begin{gather*}
+        I, L < N,\\
+        d\leqslant\min(I, L, J),
+    \end{gather*}
+    все $n$-ранги траекторного тензора $\mathcal{H}$,
+    построенного по этому ряду с параметрами $I$ и $L$, будут равны $d$.
+
+    \Definition~\emph{Траекторным тензором многомерного временного ряда}
+    \[
+        \left( x_0^{(p)}, x_1^{(p)}, \ldots, x_{N-1}^{(P)} \right), \quad p=1,2,\ldots, P
+    \]
+    \emph{с длиной окна $L$} называется тензор $\mathcal{H}\in\mathbb{C}^{L\times K \times P}$ ($K = N-L+1$),
+    элемент $h_{lkp}$ которого равен $x_{l+k-2}^{(p)}$.
+    То есть слой траекторного тензора с номером $p$ получается как траекторная матрица,
+    построенная по ряду с номером $p$ с длиной окна $L$:
+    \begin{equation}
+        \mathcal{H}_{\cdot \cdot p} = \mathbb{H}_L\left(
+        \left( s_0^{(p)}, s_1^{(p)}, \ldots s_{N-1}^{(p)} \right)
+        \right).\label{eq:nd-trajectory-tensor}
+    \end{equation}
+
+    Основываясь на свойствах HOSVD, можно доказать следующее утверждение,
+    связывающее понятие многомерного ряда конечного ранга и понятие $n$-рангов траекторного тензора этого ряда.
+    \Statement{(Об $n$-рангах траекторного тензора многомерного ряда конечного ранга)}
+    Пусть временной ряд
+    \[
+        \left( x_0^{(p)}, x_1^{(p)}, \ldots, x_{N-1}^{(p)} \right), \quad p=1, 2,\ldots, P
+    \]
+    имеет ранг $d$ в терминах SSA, тогда для траекторного тензора $\mathcal{H}$, построенного по любой длине окна $L<N$
+    такой, что ${\min(L, K) \geqslant d}$, выполняется $\rank_1(\mathcal{H})=\rank_2(\mathcal{H})=d$, а $3$-ранг этого тензора
+    равен рангу матрицы
+    \[
+        \mathbf{S} =
+        \begin{pmatrix}
+            x_0^{(1)} & x_1^{(1)} & \ldots & x_{N-1}^{(1)} \\
+            x_0^{(2)} & x_1^{(2)} & \ldots & x_{N-1}^{(2)} \\
+            \vdots & \vdots & \ldots & \vdots \\
+            x_0^{(P)} & x_1^{(P)} & \ldots & x_{N-1}^{(P)}
+        \end{pmatrix}.
+    \]
+
+
+    \razdel{Постановка задачи для одномерного сигнала}
+    Пусть дан одномерный временной ряд, состоящий из $N$ комплексных значений $s_n$, $n=0, 1,\ldots, N-1$,
+    и пусть этот ряд представим в виде конечной суммы $R$ экспоненциально-модулированных комплексных гармоник
+%    \begin{equation}
+%        s_n = \sum_{j=1}^{R} a_j \exp\left\{\iu \varphi_j\right\}
+%        \exp\left\{\left(-\alpha_j + 2 \pi \iu \omega_j\right) n\right\}.\label{eq:1d-complex-model}
+%    \end{equation}
+    Параметрами модели являются амплитуды $a_j$, фазы $\varphi_j$, частоты $\omega_j$ и степени затухания $\alpha_j$.
+    В работе~\cite{papy-esprit} рассматривается задача оценки параметров $\omega_j$ и $\alpha_j$, мы же
+    будем рассматривать задачу оценки значения самого сигнала по временному ряду с шумом.
+    Приведём алгоритм SSA для решения этой задачи.
+
+    Первый этап алгоритма -- вложение, заключается в выборе длины окна $L\geqslant 2R$ так,
+    чтобы $K = N-L+1 \geqslant 2R$, и преобразовании имеющегося временного ряда в ганкелеву матрицу с помощью
     оператора вложения:
     \begin{equation}
         \mathbf{H} = \mathbb{H}_L\left(\left(s_0, s_1, \ldots, s_{N-1}\right)\right).\label{eq:1d-hankel-matrix}
     \end{equation}
     Полученная матрица называется \emph{траекторной матрицей ряда}.
-    Эта матрица может быть представлена в виде следующего произведения трёх матриц:
-    \begin{equation}
-        \mathbf{H} =
-        \underbrace{
-            \begin{pmatrix}
-                1         & \ldots & 1         \\
-                z_1       & \ldots & z_R       \\
-                z_1^2     & \ldots & z_R^2     \\
-                \vdots    & \vdots & \vdots    \\
-                z_1^{L-1} & \ldots & z_R^{L-1} \\
-            \end{pmatrix}
-        }_{\mathbf{S}}
-        \underbrace{
-            \begin{pmatrix}
-                c_1 &        & 0   \\
-                & \ddots &     \\
-                0   &        & c_R
-            \end{pmatrix}
-        }_{\mathbf{C}}
-        \underbrace{
-            \begin{pmatrix}
-                1      & z_1    & z_1^2  & \ldots & z_1^{K-1} \\
-                \vdots & \vdots & \vdots & \ldots & \vdots    \\
-                1      & z_R    & z_R^2  & \ldots & z_R^{K-1} \\
-            \end{pmatrix}
-        }_{\mathbf{T}^{\mathrm{T}}}.\label{eq:1d-vdmd}
-    \end{equation}
-    Такое представление называется \emph{разложением Вандермонда} (VDMD).
-    С другой стороны, матрицу $\mathbf{H}$ можно представить в виде её сингулярного разложения (SVD)
+    Эту матрицу можно представить в виде её сингулярного разложения (SVD)
     \begin{equation}
         \mathbf{H}=
-        \begin{pmatrix}
-            \widehat{\mathbf{U}} & \mathbf{U}_0
-        \end{pmatrix}
-        \begin{pmatrix}
-            \widehat{\mathbf{\Sigma}} & 0                 \\
-            0                         & \mathbf{\Sigma}_0
-        \end{pmatrix}
-        \begin{pmatrix}
-            \widehat{\mathbf{V}}^{\mathrm{H}} \\
-            \mathbf{V}_0^{\mathrm{H}}
-        \end{pmatrix},\label{eq:1d-complex-svd}
+        \sum_{j=1}^{d} \lambda_j U_j V_j^{(\mathrm{H})},
+        \label{eq:1d-complex-svd}
     \end{equation}
-    где $\widehat{\mathbf{U}} \in \mathbb{C}^{L\times R}$, $\mathbf{U}_0 \in \mathbb{C}^{L\times (L-R)}$,
-    $\widehat{\mathbf{\Sigma}} \in \mathbb{C}^{R\times R}$, $\mathbf{\Sigma}_0 \in \mathbb{C}^{(L-R)\times (K-R)}$,
-    $\widehat{\mathbf{V}} \in \mathbb{C}^{K\times R}$, $\mathbf{V}_0 \in \mathbb{C}^{R\times (K-R)}$.
-    В отсутствие шума матрица $\mathbf{\Sigma}_0$ целиком состоит из нулей и сингулярное разложение $\mathbf{H}$ упрощается
-    до произведения $\mathbf{H} = \widehat{\mathbf{U}} \widehat{\mathbf{\Sigma}}\widehat{\mathbf{V}}^{\mathrm{H}}$.
-    Столбцы матрицы $\mathbf{S}$ порождают то же линейное пространство, что и столбцы матрицы $\widehat{\mathbf{U}}$ (то же самое верно
-    для столбцов матриц $\mathbf{T}$ и $\mathbf{V}$).
-    В случае, когда сигнал искажён шумом, матрица $\mathbf{\Sigma}_0$ имеет максимальный ранг и
-    тогда определяется наилучшее приближение матрицы $\mathbf{H}$ матрицей ранга $R$:
+    где $d=\rank(\mathbf{H}) \geqslant \min(L, K)$, $\lambda_j$~-- сингулярные числа матрицы $\mathbf{H}$, а
+    матрицы $\mathbf{U}=\left[ U_1 : U_2 : \ldots : U_d \right] \in \mathbb{C}^{L \times d}$ и
+    $\mathbf{V}=\left[ V_1 : V_2 : \ldots : V_d \right] \in \mathbb{C}^{K \times d}$ ортонормированные.
+    Из теории SSA~\cite{ssa} известно, что траекторные матрицы, построенные по ряду вида~\eqref{eq:1d-complex-model}
+    с такой длиной окна $L$, что $\min(L, K) \geqslant 2R$, имеют ранг $d=2R$.
+    Если на такой сигнал воздействует шум, то ранг траекторной матрицы будет максимальным, и тогда определяется
+    наилучшее приближение траекторной матрицы матрицей ранга $2R$:
     \begin{equation}
-        \widehat{\mathbf{H}} = \widehat{\mathbf{U}} \widehat{\mathbf{\Sigma}} \widehat{\mathbf{V}}^{\mathrm{H}}.
+        \widehat{\mathbf{H}}=
+        \sum_{j=1}^{2R} \lambda_j U_j V_j^{(\mathrm{H})}.
         \label{eq:1d-best-rank-approx}
     \end{equation}
-
-    Матрицы $\mathbf{S}$ и $\mathbf{T}$ обладают следующим свойством:
-    \begin{equation}
-        \begin{split}
-            \mathbf{S}_{\downarrow} & = \mathbf{Z}\mathbf{S}^{\uparrow}, \\
-            \mathbf{T}_{\downarrow} & = \mathbf{Z}\mathbf{T}^{\uparrow},
-        \end{split}\label{eq:shift-invariance}
-    \end{equation}
-    где $\mathbf{Z} = \operatorname{diag}(z_1, z_2, \ldots, z_k) \in \mathbb{C}^{R\times R}$, а стрелка вверх или вниз
-    после матрицы означает удаление верхней или нижней строки этой матрицы соответственно.
-    В случае, когда сигнал искажён белым шумом, матрица $\widehat{\mathbf{U}}$ совпадает с матрицей $\mathbf{S}$ с точностью
-    до умножения на невырожденную матрицу $\mathbf{Q}\in \mathbb{C}^{R\times R}$
-    \begin{equation}
-        \widehat{\mathbf{U}} = \mathbf{S} \mathbf{Q},\label{eq:1d-u-to-s}
-    \end{equation}
-    и тогда матрицы $\widehat{\mathbf{U}}_{\downarrow}$ и $\widehat{\mathbf{U}}^{\uparrow}$ связаны с $\mathbf{S}_{\downarrow}$ и
-    $\mathbf{S}^{\uparrow}$ соответственно через равенства
-    \begin{equation}
-        \begin{split}
-            \widehat{\mathbf{U}}^{\uparrow} = \mathbf{S}^{\uparrow} \mathbf{Q}, \\
-            \widehat{\mathbf{U}}_{\downarrow} = \mathbf{S}_{\downarrow} \mathbf{Q}.
-        \end{split}\label{eq:u-to-s-shift}
-    \end{equation}
-
-    Объединяя уравнения~\eqref{eq:shift-invariance} и~\eqref{eq:u-to-s-shift}, получаем уравнение
-    \begin{equation}
-        \widehat{\mathbf{U}}^{\uparrow} = \widehat{\mathbf{U}}_{\downarrow} \overline{\mathbf{Z}},\label{eq:1d-key-eq}
-    \end{equation}
-    где матрица $\overline{\mathbf{Z}} = \mathbf{Q}^{-1} \mathbf{Z} \mathbf{Q}$ имеет те же собственные числа, что и
-    матрица $\mathbf{Z}$.
-    Таким образом, оценками параметров $z_j$ можно считать собственные числа решения уравнения~\eqref{eq:1d-key-eq}
-    относительно $\overline{\mathbf{Z}}$.
-
-    \podrazdel{Выделение сигнала}
-    Рассматривается задача нахождения оценки сигнала по временному ряду с шумом.
-    Будем считать, что наблюдаемый ряд является суммой шума и вещественного сигнала, полученного из вещественной части
-    сигнала~\eqref{eq:1d-complex-model}, то есть
-    \begin{equation}
-        \begin{split}
-            x_n &= s_n + \varepsilon_n \\
-            &=\underbrace{\sum_{j=1}^{R} c_j e^{-\alpha_j n} \cos\left(2 \pi \omega_j n\right)}_{\text{сигнал}}
-            + \underbrace{\varepsilon_n}_{\text{шум}}, \quad n=0,1,\ldots, N-1.
-        \end{split}
-        \label{eq:1d-real-model}
-    \end{equation}
-    Приведём алгоритм решения этой задачи с помощью метода SSA~\cite{ssa}.
-
-    Аналогично предыдущему алгоритму, по ряду~\eqref{eq:1d-real-model} строится траекторная матрица $\mathbf{H}$
-    вида~\eqref{eq:1d-hankel-matrix} с длиной окна $L \geqslant 2R$.
-    Далее рассматривается SVD этой матрицы в виде~\eqref{eq:1d-complex-svd},
-    где ${\widehat{\mathbf{U}} \in \mathbb{C}^{L\times 2R}}$, ${\mathbf{U}_0 \in \mathbb{C}^{L\times (L-2R)}}$,
-    $\widehat{\mathbf{\Sigma}} \in \mathbb{C}^{2R\times 2R}$, $\mathbf{\Sigma}_0 \in \mathbb{C}^{(L-2R)\times (K-2R)}$,
-    $\widehat{\mathbf{V}} \in \mathbb{C}^{K\times 2R}$, $\mathbf{V}_0 \in \mathbb{C}^{2R\times (K-2R)}$.
-    Если шум отсутствует, то матрица $\widetilde{\mathbf{H}}$, определяемая аналогично~\eqref{eq:1d-best-rank-approx}
-    совпадёт с траекторной матрицей $\mathbf{H}$, иначе $\widehat{\mathbf{H}}$
-    является наилучшим приближением ранга $2R$ матрицы $\mathbf{H}$.
 
     Последний шаг алгоритма~-- восстановление, заключается в усреднении побочных диагоналей матрицы
     $\widehat{\mathbf{H}}$, то есть
     \begin{equation}
-        \widetilde{s}_n = \frac {1}{|M_n|} \sum_{i,j\in M_n}\widehat{x}_{ij}, \quad n=0,1,\ldots, N-1,
+        \widetilde{s}_n = \frac {1}{|M_n|} \sum_{i,j\in M_n}\widehat{h}_{ij}, \quad n=0,1,\ldots, N-1,
         \label{eq:1d-diag-averaging}
     \end{equation}
     где ${M_n = \left\{(i, j):\: i+j-2=n,\, 1 \leqslant i \leqslant L,\,  1 \leqslant j \leqslant K\right\}}$, а
-    $\widehat{x}_{ij}$~-- элементы матрицы $\widehat{\mathbf{H}}$.
+    $\widehat{h}_{ij}$~-- элементы матрицы $\widehat{\mathbf{H}}$.
     Результат такого усреднения $\widetilde{s}_n$ считается оценкой сигнала $s_n$.
 
     \razdel{Постановка задачи для многомерного сигнала}
     Пусть дан набор из $P$ одномерных комплексных временных рядов длины $N$ каждый, и пусть
     компоненты этих рядов имеют вид
-    \begin{equation}
-        s_n^{(p)} = \sum_{j=1}^{R} a_j^{(p)} \exp\left\{\iu \varphi_j^{(p)}\right\}
-        \exp\left\{\left(-\alpha_j + 2 \pi \iu \omega_j\right) n\right\} =
-        \sum_{j=1}^{R} c_j^{(p)} z_j^n,
-        \label{eq:nd-complex-model}
-    \end{equation}
-    где $n=0,1,\ldots, N-1$, а $p$ ($1\leqslant p \leqslant P$) отвечает за номер временного ряда.
-    \podrazdel{Оценка параметров многомерного сигнала}
-    Для оценки параметров $\alpha_j$ и $\omega_j$ многомерного ряда используется алгоритм, аналогичный алгоритму
-    для одномерных рядов.
+%    \begin{equation}
+%        s_n^{(p)} = \sum_{j=1}^{R} a_j^{(p)} \exp\left\{\iu \varphi_j^{(p)}\right\}
+%        \exp\left\{\left(-\alpha_j + 2 \pi \iu \omega_j\right) n\right\},
+%        \label{eq:nd-complex-model}
+%    \end{equation}
+%    где $n=0,1,\ldots, N-1$, а $p$ ($1\leqslant p \leqslant P$) отвечает за номер временного ряда.
+
+    Приведём алгоритм MSSA для решения задачи оценки многомерного сигнала.
     На первом шаге каждый из одномерных сигналов $s_n^{(p)}$ преобразуется в траекторную матрицу с длиной окна $L$
     \begin{equation}
         \mathbf{H}_p = \mathbb{H}_L\left(\left(s_0^{(p)}, s_1^{(p)}, \ldots, s_{N-1}^{(p)}\right)\right).\label{eq:nd-hankel-matrix}
     \end{equation}
     Полученные матрицы укладываются друг за другом вдоль столбцов в одну блочную матрицу
-    \begin{equation}
-        \mathbf{H} = [\mathbf{H}_1 : \mathbf{H}_2 : \ldots : \mathbf{H}_P],\label{eq:nd-trajectory-matrix}
-    \end{equation}
+%    \begin{equation}
+%        \mathbf{H} = [\mathbf{H}_1 : \mathbf{H}_2 : \ldots : \mathbf{H}_P],\label{eq:nd-trajectory-matrix}
+%    \end{equation}
     называемую \emph{траекторной матрицей многомерного ряда}.
-    Эта матрица может быть представлена в следующем виде:
-    \begin{equation}
-        \mathbf{H} = \mathbf{S}\left[\mathbf{C}_1 \mathbf{T}^{\mathrm{T}}:\mathbf{C}_2 \mathbf{T}^{\mathrm{T}} :
-        \ldots : \mathbf{C}_P \mathbf{T}^{\mathrm{T}}\right],\label{eq:nd-vdmd}
-    \end{equation}
-    где $\mathbf{S}$ и $\mathbf{T}$~-- матрицы Вандермонда, определённые в~\eqref{eq:1d-vdmd}, а
-    $\mathbf{C}_p = \operatorname{diag}\left(c_1^{(p)}, c_2^{(p)}, \ldots, c_R^{(p)}\right)$.
-    Пусть $\widehat{\mathbf{U}}$~-- матрица, столбцы которой равны первым $R$ сингулярным векторам матрицы $\mathbf{H}$,
-    тогда подпространства, порождаемые столбцами $\widehat{\mathbf{U}}$ и $\mathbf{S}$, совпадают, и
-    для нахождения оценок $z_k$ можно аналогично одномерному случаю повторить процедуру, описанную уравнением~\eqref{eq:1d-key-eq}.
-
-    \podrazdel{Выделение многомерного сигнала}
-    Рассматривается многомерный временной ряд, являющийся суммой шума и многомерного сигнала,
-    состоящего из вещественных частей сигнала~\eqref{eq:nd-complex-model}, то есть
-    \begin{equation}
-        \begin{split}
-            x_n^{(p)} &= s_n^{(p)} + \varepsilon_n^{(p)} \\
-            &=\sum_{j=1}^{R} c_j^{(p)} e^{-\alpha_j n} \cos(2 \pi \omega_j n) + \varepsilon_n^{(p)}\\
-            &n=0,1,\ldots, N-1, \quad 1\leqslant p \leqslant P.
-        \end{split}
-        \label{eq:nd-real-model}
-    \end{equation}
-    Приведём алгоритм MSSA~\cite{mssa} для выделения сигнала из многомерного временного ряда.
-
-    На первом этапе по заданному временному ряду строится траекторная матрица
-    $\mathbf{H}$ в соответствии с~\eqref{eq:nd-hankel-matrix} и~\eqref{eq:nd-trajectory-matrix} с длиной окна $L \geqslant 2R$.
-    Затем рассматривается SVD этой матрицы в виде~\eqref{eq:1d-complex-svd}, где
-    ${\widehat{\mathbf{U}} \in \mathbb{C}^{L\times 2R}}$, ${\mathbf{U}_0 \in \mathbb{C}^{L\times (L-2R)}}$,
-    $\widehat{\mathbf{\Sigma}} \in \mathbb{C}^{2R\times 2R}$, $\mathbf{\Sigma}_0 \in \mathbb{C}^{(L-2R)\times (KP-2R)}$,
-    $\widehat{\mathbf{V}} \in \mathbb{C}^{KP\times 2R}$, $\mathbf{V}_0 \in \mathbb{C}^{2R\times (KP-2R)}$,
-    после чего строится матрица $\widetilde{\mathbf{H}}$ аналогично~\eqref{eq:1d-best-rank-approx},
-    эта матрица является наилучшим приближением ранга $2R$ траекторной матрицы $\mathbf{H}$.
-    Последний шаг алгоритма~-- восстановление, совпадает с последним шагом алгоритма SSA~\eqref{eq:1d-diag-averaging}.
+    Дальнейшие шаги алгоритма идентичны одномерному случаю: траекторная матрица $\mathbf{H}$ представляется в виде
+    своего сингулярного разложения~\eqref{eq:1d-complex-svd}, затем определяется наилучшее приближение этой матрицы
+    матрицей $\widehat{\mathbf{H}}$ ранга $2R$~\eqref{eq:1d-best-rank-approx}, после чего находятся усреднённые
+    значения побочных диагоналей этой матрицы~\eqref{eq:1d-diag-averaging}, которые и считаются
+    оценками искомого сигнала.
 
     \razdel{Тензорные модификации алгоритмов выделения сигнала из временного ряда}
     В работе~\cite{papy-esprit} были предложены тензорные модификации алгоритма ESPRIT для оценки параметров
@@ -332,56 +371,33 @@
     и многомерных рядов.
 
     \podrazdel{High-Order SSA}
-    Пусть дан одномерный временной ряд вида~\eqref{eq:1d-real-model}.
+    Пусть дан одномерный временной ряд вида~\eqref{eq:1d-complex-model}.
     Вместо траекторной матрицы предлагается строить по ряду \emph{траекторный тензор} $\mathcal{H}$ следующим образом:
     выбираются два параметра $I, L \geqslant 2R$ такие, что $J \geqslant 2R$ ($J = N- I - L + 2$), и тогда
-    элемент тензора $h_{i l j}$ берётся равным $x_{i+l+j-3}$.
+    элемент тензора $h_{i l j}$ берётся равным $s_{i+l+j-3}$.
     Другими словами, слой траекторного тензора с номером $j$ получается как траекторная матрица,
-    построенная по части исходного ряда $\left(x_{j-1}, x_j, \ldots, x_{j+I+L-3}\right)$ с длиной окна $I$:
-    \begin{equation}
-        \mathcal{H}_{\cdot \cdot j} = \mathbb{H}_I \left(\left(x_{j-1}, x_j, \ldots, x_{j+I+L-3}  \right)\right).
-        \label{eq:trajectory-tensor}
-    \end{equation}
+    построенная по части исходного ряда $\left(s_{j-1}, s_j, \ldots, s_{j+I+L-3}\right)$ с длиной окна $I$:
+%    \begin{equation}
+%        \mathcal{H}_{\cdot \cdot j} = \mathbb{H}_I \left(\left(s_{j-1}, x_j, \ldots, s_{j+I+L-3}  \right)\right).
+%        \label{eq:trajectory-tensor}
+%    \end{equation}
     На следующем шаге траекторный тензор представляется в виде своего сингулярного разложения высшего порядка
     (HOSVD)~\cite{hosvd}:
     \begin{equation}
-        \mathcal{H} = \sum_{i=1}^{I} \sum_{l=1}^{L} \sum_{j=1}^{J} c_{ilj} U^{(1)}_i \circ U^{(2)}_l \circ U^{(3)}_j,
+        \mathcal{H} = \sum_{i=1}^{d_1} \sum_{l=1}^{d_2} \sum_{j=1}^{d_3} c_{ilj} U^{(1)}_i \circ U^{(2)}_l \circ U^{(3)}_j,
         \label{eq:1d-hosvd}
     \end{equation}
-    где матрицы $\mathbf{U}_k = \left[ U^{(k)}_1, U^{(k)}_2, \ldots, U^{(k)}_{I_k} \right]$
+    где матрицы $\mathbf{U}_k = \left[ U^{(k)}_1, U^{(k)}_2, \ldots, U^{(k)}_{d_k} \right] \in \mathbb{C}^{}$
     ($I_1=I,\, I_2=L,\, I_3=J$) ортонормированные, а $\circ$ обозначает внешнее произведение векторов.
+
     \Definition \emph{Развёрткой} тензора $\mathcal{A}\in \mathbb{C}^{I_1 \times I_2 \times \ldots \times I_M}$
     по измерению $n$ называют матрицу $\mathbb{A}_{(n)}\in
     \mathbb{C}^{I_n \times I_{n+1}I_{n+2}\ldots I_{M}I_{1}I_{2}\ldots I_{n-1}}$, в которой элемент исходного тензора
     $a_{i_1 i_2\ldots i_M}$ содержится в строке $i_n$ и столбце с номером
     \[
         1 + \sum_{\substack{k=1 \\ k\ne n}}^{M} \left[ (i_k-1) \prod_{\substack{m=1 \\ m\ne n}}^{k-1} I_m \right].
-%        \begin{aligned}
-%            &(i_{n+1} - 1)I_{n+2}I_{n+3}\ldots I_{M}I_1 I_2\ldots I_{n-1} \\
-%            + &(i_{n+2} - 1)I_{n+3}I_{n+4}\ldots I_M I_1 I_2 \ldots I_{n-1} + \dots \\
-%            + &(i_M - 1)I_1 I_2 \ldots I_{n-1} + (i_1 - 1)I_2 I_3\ldots I_{n-1}\\
-%            + &(i_2 - 1)I_3 I_4\ldots I_{n-1} + \dots + i_{n-1}.
-%        \end{aligned}
     \]
-%    \WrapFigure{10}{0.4\textwidth}{\textwidth}{images/unfolding.eps}
-%    {Развёртка тензора $\mathcal{A}$ размерности $I_1\times I_2 \times I_3$ в матрицы $\mathbf{A}_{(1)},\,
-%    \mathbf{A}_{(2)},\, \mathbf{A}_{(3)}$ размерностей
-%        $I_1\times (I_2 I_3),\, I_2\times (I_3 I_1),\, I_3\times (I_1 I_2)$
-%        соответственно \label{fig:unfolding}}
-    \Figure{0.7\textwidth}{images/unfolding.eps}{
-        Развёртка тензора $\mathcal{A}$ размерности $I_1\times I_2 \times I_3$ в матрицы $\mathbf{A}_{(1)},\,
-        \mathbf{A}_{(2)},\, \mathbf{A}_{(3)}$ размерностей
-        $I_1\times (I_2 I_3),\, I_2\times (I_3 I_1),\, I_3\times (I_1 I_2)$
-        соответственно \label{fig:unfolding}}
-%    \begin{figure}[!h]
-%            \centering
-%            \includegraphics[width=\textwidth]{/images/unfolding}
-%            \caption{Развёртка тензора $\mathcal{A}$ размерности $I_1\times I_2 \times I_3$ в матрицы $\mathbf{A}_{(1)},\,
-%            \mathbf{A}_{(2)},\, \mathbf{A}_{(3)}$ размерностей $I_1\times (I_2 I_3),\, I_2\times (I_3 I_1),\, I_3\times (I_1 I_2)$
-%                соответственно}
-%            \label{fig:unfolding}
-%        \end{figure}
-    Визуализация развёрток тензора с тремя измерениями приведена на рисунке~\ref{fig:unfolding}.
+
     \Definition \emph{$n$-рангом} тензора $\mathcal{A}$ называют ранг развёртки этого тензора по измерению $n$.
 
     Если во временном ряде отсутствует шум, то все $n$-ранги траекторного тензора $\mathcal{H}$ будут равны $2R$
@@ -407,19 +423,19 @@
     Результат такого усреднения $\widetilde{s}_n$ считается оценкой сигнала $s_n$.
 
     \podrazdel{High-Order MSSA}
-    Пусть дан многомерный временной ряд вида~\eqref{eq:nd-real-model}.
+    Пусть дан многомерный временной ряд вида~\eqref{eq:nd-complex-model}.
     На первом шаге выбирается длина окна $L \geqslant 2R$ такая, что
     $K = N-L+1 \geqslant 2R$, и по этому ряду строится
     \emph{траекторный тензор многомерного ряда} $\mathcal{H}$ так,
-    что его элемент $h_{lkp}$ равен $x_{l+k-2}^{(p)}$, где $1\leqslant l \leqslant L$,
+    что его элемент $h_{lkp}$ равен $s_{l+k-2}^{(p)}$, где $1\leqslant l \leqslant L$,
     $1 \leqslant k \leqslant K$, $1\leqslant p \leqslant P$.
     То есть слой траекторного тензора с номером $p$ получается как траекторная матрица,
     построенная по ряду с номером $p$ с длиной окна $L$:
-    \begin{equation}
-        \mathcal{H}_{\cdot \cdot p} = \mathbb{H}_L\left(
-        \left( x_0^{(p)}, x_1^{(p)}, \ldots x_{N-1}^{(p)} \right)
-        \right).\label{eq:nd-trajectory-tensor}
-    \end{equation}
+%    \begin{equation}
+%        \mathcal{H}_{\cdot \cdot p} = \mathbb{H}_L\left(
+%        \left( s_0^{(p)}, s_1^{(p)}, \ldots s_{N-1}^{(p)} \right)
+%        \right).\label{eq:nd-trajectory-tensor}
+%    \end{equation}
     Затем траекторный тензор представляется в виде своего HOSVD
     \begin{equation}
         \mathcal{H} = \sum_{l=1}^{L} \sum_{k=1}^{K} \sum_{p=1}^{P}
@@ -429,11 +445,11 @@
 
     Если во временном ряде отсутствует шум, то $1$- и $2$-ранги траекторного тензора
     $\mathcal{H}$ будут равны $2R$, $3$-ранг будет равен $R$,
-    и верхние пределы суммирования в представлении~\eqref{eq:1d-hosvd} будут
+    и верхние пределы суммирования в представлении~\eqref{eq:nd-hosvd} будут
     равны соответствующим $n$-рангам.
     В случае, если во временном ряде присутствует шум, то у траекторного тензора будут максимальные $n$-ранги,
     и тогда строится приближение траекторного тензора
-     \begin{equation}
+    \begin{equation}
         \widehat{\mathcal{H}} = \sum_{l=1}^{2R} \sum_{k=1}^{2R}
         \sum_{p=1}^{R} c_{lkp} U^{(1)}_l \circ U^{(2)}_k \circ U^{(3)}_p.
         \label{eq:nd-cropped-hosvd}
@@ -444,10 +460,10 @@
     вдоль побочных <<плоскостей>> ${l+k+p = \operatorname{const}}$.
 
     \razdel{Численные сравнения}
-    Нами были проведены численные сравнения методов SSA и MSSA с их тензорными аналогами
+    В данном разделе приведем результаты численных сравнений методов SSA и MSSA с их тензорными аналогами
     HO-SSA и HO-MSSA соответственно.
-    Точность выделения сигнала сравнивалась с помощью RMSE оценки сигнала от его истинного значения по 1000
-    реализаций шума.
+    Точность выделения сигнала сравнивалась с помощью RMSE оценки сигнала по 1000
+    реализациям шума.
     Методы сравнивались на одних и тех же реализациях шума, все различия значимы при уровне значимости $\alpha = 0.05$.
 
     \podrazdel{Одномерный сигнал}
@@ -460,16 +476,13 @@
     где $n=0,1,\ldots, 24$, $\varepsilon_n$~-- последовательность независимых нормальных случайных величин
     со стандартным отклонением $\sigma = 0.03$.
 
-    Экспериментально было получено, что для рассматриваемого ряда оптимальная длина окна $L$ в методе SSA равна $13$,
-    а оптимальные длины окон $I$ и $L$ в методе HO-SSA равны $4$ и $9$ соответственно.
-    \Table{RMSE оценки одномерного сигнала \label{tab:1d-rmse}}{|c|c|}{
-    SSA & HO-SSA \nextline
-    $0.0188$ & $0.0197$ \nextline
-    }{}
-    В таблице~1 приведены значения RMSE оценок одномерного сигнала~\eqref{eq:1d-comparison} методами
+    Сравним точность выделения сигнала при выборе оптимальных для каждого метода длинах окна (для SSA $L = 13$, а для HO-SSA $I=4$ и $L=9$).
+
+    Ранг сигнала в обоих случаях равен 4. Соответственно, число компонент для оценки сигнала будем выбирать равным 4.
+
+    В таблице~1 в первых двух столбцах приведены значения RMSE оценок одномерного сигнала~\eqref{eq:1d-comparison} методами
     SSA и HO-SSA.
-    Видно, что метод SSA отделил сигнал с б\`{о}льшей точностью, чем метод HO-SSA, что не соответствует результатам~\cite{papy-esprit},
-    где тензорный метод оказался точнее.
+    Видно, что метод SSA отделил сигнал с б\`{о}льшей точностью, чем метод HO-SSA, что отличается от результатов в~\cite{papy-esprit}, где тензорный метод оказался точнее для оценки параметров сигнала.
 
     \podrazdel{Многомерный сигнал}
     Пусть временной ряд имеет вид
@@ -481,16 +494,29 @@
     где $n=0,1,\ldots, 24$, $p=1,2,\ldots, 12$, $\varepsilon_n$~-- последовательность независимых нормальных случайных величин
     со стандартным отклонением $\sigma = 0.02$.
 
-    Экспериментально было получено, что для рассматриваемого ряда оптимальная длина окна $L$ в методе MSSA равна $22$,
-    а в методе HO-MSSA~-- $20$.
-    \Table{RMSE оценки многомерного сигнала}{|c|c|}{
-    MSSA & HO-MSSA \nextline
-    $0.0107$ & $0.0079$ \nextline
+    Будем сравнивать точность выделения сигнала при выборе оптимальных для каждого метода длинах окна (для SSA $L = 22$, а для HO-SSA $L=20$).
+
+    Ранг сигнала в обоих случаях равен 4.
+    Соответственно, число компонент для оценки сигнала будем выбирать равным 4.
+    \Table{RMSE оценки сигнала \label{tab:1d-rmse}}{|c|c|c|c|}{
+        SSA \eqref{eq:1d-comparison}& HO-SSA \eqref{eq:1d-comparison}& MSSA \eqref{eq:nd-comparison}& HO-MSSA \eqref{eq:nd-comparison}\nextline
+        $0.0188$ & $0.0197$ & $0.0107$ & $0.0079$\nextline
     }{}
-    В таблице~2 приведены значения RMSE оценок многомерного сигнала~\eqref{eq:nd-comparison} методами
+%    \Table{RMSE оценки многомерного сигнала}{|c|c|}{
+%    MSSA & HO-MSSA \nextline
+%    $0.0107$ & $0.0079$ \nextline
+%    }{}
+    В третьем и четвертом столбцах таблицы~1 приведены значения RMSE оценок многомерного сигнала~\eqref{eq:nd-comparison} методами
     MSSA и HO-MSSA.
     Видно, что метод HO-MSSA отделил сигнал с б\`{о}льшей точностью, чем метод MSSA, что аналогично результатам, полученным
-    в работе~\cite{papy-esprit}.
+    в работе~\cite{papy-esprit} для точности оценок параметров сигнала.
+
+    \razdel{Заключение}
+    В результате работы было показано, что тензорный вариант HO-SSA дал точность хуже, чем обычный SSA. Поэтому не рекомендуется использовать HO-SSA, если нужно оценить сигнал. Однако для многомерного сигнала было выявлено преимущество рассматриваемой тензорной модификации.
+
+    Соответственно, в следующих исследованиях имеет смысл развивать теорию метода HO-MSSA для увеличения точность оценивания сигнала и его компонент.
+
+
     %%    \Table{Нумерованная таблица}{|p{1cm}|p{3cm}|p{3cm}|}{
 %%        \centering\textbf{\No{} п/п} & \centering{\textbf{Данные типа 1}} & \centering{\textbf{Данные типа 2}} \nextline
 %%        \centering10223 & Первое число & Первое слово \nextline
@@ -959,12 +985,15 @@
 
 %%%%%%%%%%%%%%% Статья в журнале Вестник СПбГУ. Номер серии теперь НЕ ПИШЕТСЯ!!!!! Примеры ссылко на статьи в последее время публикуются в самих статьях, СМ. сайт: http://vestnik.spbu.ru/s10.html и далее, например: http://vestnik.spbu.ru/html18/s10/s10v4/s10v4.html и далее, например: http://vestnik.spbu.ru/html18/s10/s10v4/01.pdf
 % Номер выпуск оформляется символом номера - \№ !!!!!!!!!!!!!!
-        \bibitem{papy-esprit}Papy~J.\:M., De~Lathauwer~L., Van~Huffel~S. Exponential data fitting using multilinear algebra: the single-channel and multi-channel case // Numerical Linear Algebra with Applications. 2005. №~8. P.~809--826.
-        \bibitem{ESPRIT} Roy~R., Kailath~T. ESPRIT-estimation of signal parameters via rotational invariance techniques // IEEE Transactions on Acoustics, Speech, and Signal Processing. 1989. №7. P.~984--995.
+        \bibitem{papy-esprit}Papy~J.\:M., De~Lathauwer~L., Van~Huffel~S. Exponential data fitting using multilinear algebra: the single-channel and multi-channel case // Numerical Linear Algebra with Applications. 2005. Vol.~12(8). P.~809--826.
+        \bibitem{ESPRIT} Roy~R., Kailath~T. ESPRIT-estimation of signal parameters via rotational invariance techniques // IEEE Transactions on Acoustics, Speech, and Signal Processing. 1989. Vol.~37(7). P.~984--995.
         \bibitem{ssa} Golyandina~N., Nekrutkin~V., Zhigljavsky~A.\: A. Analysis of Time Series Structure - SSA and Related Techniques. Chapman and Hall/CRC, 2001. 320~p.
         \bibitem{mssa} Golyandina~N., Zhigljavsky~A. Singular Spectrum Analysis for Time Series. Springer Berlin, Heidelberg, 2020. 146~p.
-        \bibitem{hosvd} De~Lathauwer~L., De~Moor~B., Vandewalle~J. A Multilinear Singular Value Decomposition // SIAM Journal on Matrix Analysis and Applications. 2000. №4. P. 1253-1278.
-        \bibitem{ezhov-ssa} Ежов~Ф.\: В. Исследование гибридных моделей нейронных сетей с применением SSA на примере реальных данных // Процессы управления и устойчивость. 2022. №1. С. 223--231.
+        \bibitem{hosvd} De~Lathauwer~L., De~Moor~B., Vandewalle~J. A Multilinear Singular Value Decomposition // SIAM Journal on Matrix Analysis and Applications. 2000. Vol.~21(4). P.~1253-1278.
+        \bibitem{ezhov-ssa} Ежов~Ф.\: В. Исследование гибридных моделей нейронных сетей с применением SSA на примере реальных данных // Процессы управления и устойчивость. 2022. Т.~9, №~1. С.~223--231.
+        \bibitem{Vestnik} Головкина~A.\: Г., Козынченко~В.\: А., Клименко~И.\: С. Метод последовательных приближений для построения модели динамической полиномиальной регрессии // Вестник Санкт-Петербургского университета. Прикладная математика. Информатика. Процессы управления. 2023. Т.~18, Вып.~4. С.~487--500.
+        \bibitem{NMR} Van~Huffel~S., Chen~H., Decanniere~C., Van~Hecke~P. Algorithm for Time-Domain NMR Data Fitting Based on Total Least Squares // Journal of Magnetic Resonance. 1994. Vol.~110(2). P.~228--237.
+        \bibitem{Stepanov} Степанов~Д.\: В., Голяндина~Н.\: Э. Варианты метода <<Гусеница>>-SSA для прогноза многомерных временных рядов // Труды IV Международной конференции <<Идентификация систем и задачи управления>> SICPRO’05. 2005. С.~1831--1848.
 %        \bibitem{Abb} Аббасов~М.\:Э. Исчисление коэкзостеров второго порядка // Вестник Санкт-Петербургского университета. Прикладная математика. Информатика. Процессы управления. 2018. Т. 14. №~4. С. 276--285.
 %        \bibitem{khar2} Харитонов~В.\:Л. Функционалы Ляпунова с заданной производной: Матрицы Ляпунова // Вестник Санкт-Петербургского университета. Прикладная математика. Информатика. Процессы управления. 2005. №~2. С.~200--209.
 
@@ -1053,4 +1082,4 @@
 %
 %        \bibitem{parall} LAM/MPI Parallel Computing [Электронный ресурс]: \url{URL: http://www.osc.edu/lam.
     \end{thebibliography}
-\end{document}
+\end{document} 
