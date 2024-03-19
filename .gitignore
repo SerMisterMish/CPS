@@ -2,4 +2,4 @@
 /TeX/src/Papy_et_al-2005-Exponential data fitting using multilinear algebra The.pdf
 /.idea/
 /TeX/out/*.synctex.gz
-/Code/comparisons.Rdata
+*.Rdata

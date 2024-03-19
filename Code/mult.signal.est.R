@@ -108,13 +108,16 @@ c1 <- rnorm(Q)
 c2 <- rnorm(Q)
 # c1 <- rep(1, Q)
 # c2 <- rep(1, Q)
-s <- exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N) %o% c1 + exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N) %o% c2
+# s <- exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N) %o% c1 + exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N) %o% c2
+s <- sapply(1:Q, function(i) exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N + pi * i/ 6) * c1[i] +
+                            exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N + pi * i / 9) * c2[i])
 r <- 4
-r3 <- 2
+# r3 <- 2
+r3 <- 4
 # r <- 2
 SNR <- 30
-sigma <- mean(sapply(1:Q, function(i) snr.to.sd(s[, i], SNR)))
-# sigma <- 0.02
+# sigma <- mean(sapply(1:Q, function(i) snr.to.sd(s[, i], SNR)))
+sigma <- 0.02
 
 mult.signest.sc <- function(L, Mat = TRUE, Tens = TRUE) {
   # s.n <- s + rcnorm(N + 1, var = sigma^2)
@@ -141,7 +144,7 @@ mult.signest.sc <- function(L, Mat = TRUE, Tens = TRUE) {
 
 R <- 1000
 signal.tens <- s %o% rep(1, R)
-L.mat <- 22; L.tens <- 20
+L.mat <- 21; L.tens <- 21
 se.mult.comp.res <- list()
 system.time({
   set.seed(1)
@@ -155,7 +158,8 @@ mean(rowMeans(sqrt(apply(abs(mat.res - signal.tens)^2, 1:2, mean))))
 mean(rowMeans(sqrt(apply(abs(tens.res - signal.tens)^2, 1:2, mean))))
 
 # R <- 1000
-# res2 <- list(mat = numeric(length(4:(N - r + 1))), tens = numeric(length(4:(N - r + 1))))
+# signal.tens <- s %o% rep(1, R)
+# res2 <- list(mat = numeric(length(4:(N - r + 2))), tens = numeric(length(4:(N - r + 2))))
 # for (L in 4:(N - r + 2)) {
 #   set.seed(1)
 #   system.time({ se.mult.comp.res <- replicate(R, mult.signest.sc(L = L), simplify = "array") })
