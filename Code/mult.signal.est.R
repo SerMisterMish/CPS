@@ -106,15 +106,12 @@ N <- 24
 Q <- 12
 c1 <- rnorm(Q)
 c2 <- rnorm(Q)
-# c1 <- rep(1, Q)
-# c2 <- rep(1, Q)
 # s <- exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N) %o% c1 + exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N) %o% c2
 s <- sapply(1:Q, function(i) exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N + pi * i/ 6) * c1[i] +
                             exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N + pi * i / 9) * c2[i])
 r <- 4
 # r3 <- 2
 r3 <- 4
-# r <- 2
 SNR <- 30
 # sigma <- mean(sapply(1:Q, function(i) snr.to.sd(s[, i], SNR)))
 sigma <- 0.02

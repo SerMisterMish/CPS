@@ -61,7 +61,7 @@
     \end{frame}
 
 
-    \section{Introduction}\label{sec:introduction}
+    \section{Введение}\label{sec:introduction}
     \begin{frame}{Постановка задачи}
         $\tX=(x_1, x_2,\ldots, x_N)$, $x_i\in \mathbb{R}$ "--- вещественный временной ряд.
 
@@ -99,7 +99,7 @@
     \end{frame}
 
 
-    \section{Model}\label{sec:model}
+    \section{Модель}\label{sec:model}
     \begin{frame}{Модель одномерного сигнала}
         $\tX = (x_0, x_1, \ldots, x_{N-1}) = \tS + \tR$,\\
         $\tS$ --- сигнал, $\tR$ --- шум.
@@ -214,332 +214,152 @@
         \end{enumerate}
     \end{frame}
 
-
-
-    \begin{frame}{SSA для выделения сигнала}
-        $\tX = (x_1, x_2, \dots, x_N) = \tS + \tR$,
-        $L$ - длина окна, $K = N - L + 1 \geqslant L$.
-
-        \vspace{0.3cm}
-
-        \bluetext{Параметры алгоритма:} $L,\, R:\: R \leqslant L < N$.
-
-        $R$ --- число компонент, отнесённых к сигналу.
-
-        \vspace{0.3cm}
-
-        \bluetext{Схема алгоритма SSA для выделения сигнала}
-        \begin{enumerate}
-            \item \bluetext{Вложение} $\tX \mapsto \bfX = [X_1:X_2: \dots: X_K]\in \bbR^{L\times K},$
-
-            $X_i = (x_i, x_{i+1}, \dots, x_{i + L})^{\rmT}$
-
-            \vspace{0.2cm}
-
-            \item \bluetext{Разложение} $\bfX = \sum_{i=1}^{d} \sqrt{\lambda_i}U_i V_i^\rmT,\,\, d \leqslant L$
-
-            \vspace{0.2cm}
-
-            \item \bluetext{Группировка} $\tilde{\bfX}= \sum_{i=1}^{R} \sqrt{\lambda_i}U_i V_i^\rmT$
-
-            \vspace{0.2cm}
-
-            \item \bluetext{Восстановление} Матрица $\tilde{\bfX}$ усредняется вдоль побочных диагоналей
-            $\tilde{x_k} = \operatorname{mean}\left\{(\tilde{\bfX})_{i,j}~|~i + j - 1 = k\right\}.$
-        \end{enumerate}
-
-        \vspace{0.1cm}
-
-        \bluetext{Результат алгоритма} $\tilde{\tX} = (\tilde{x}_1, \tilde{x}_2, \ldots, \tilde{x}_N)$.
-    \end{frame}
-
-
-    \section{Ранг}\label{sec:rank}
     \begin{frame}{Ранг сигнала}
-        $\tX = \tS$.
-
-        $\tS$ имеет ранг $r$, если $\forall L:~r \leqslant \min(L, K) \,\,\, \operatorname{rank}{\bfX} = r$.
+        $\tS$ имеет ранг $r$, если $\forall L:~r \leqslant \min(L, K) \,\,\, \operatorname{rank}{\bbH_L(\tS)} = r$.
 
         Рекомендуемый выбор параметра $R$ в алгоритме: $R=r$.
 
-        \vspace{0.7cm}
+        \vspace{0.4cm}
 
         \bluetext{Примеры}
         \begin{itemize}
-
-            \item $s_n = \cos(2\pi n \omega + \psi),\qquad n\in\overline{1:N}$,
-
-            $0 < \omega < \frac 1 2,\, \psi\in [0;2\pi)$
-
-            \vspace{0.2cm}
-
-            $r = 2$.
-
-            \vspace{0.4cm}
-
-            \item $s_n = a^n,\qquad n\in\overline{1:N}, \qquad a\neq 0$
-
-            \vspace{0.2cm}
-
-            $r = 1$.
+            \item $s_n = A e^{\alpha n} \cos(2\pi \omega n + \varphi),$\\
+            $A \ne 0,\, \alpha \in \bbR,\, \omega \in [0, 1/2],\, \varphi \in [0, 2\pi)$
+            \[
+                r(\omega) =
+                \begin{cases}
+                    1, & \omega \in \{0, 1/2\},\\
+                    2, & \omega \in (0, 1/2).
+                \end{cases}
+            \]
+            \item
+            \[
+                s_n^{(p)} = \sum_{j=1}^{R} a_j^{(p)} e^{ -\alpha_j n }
+                \cos\left( 2 \pi \omega_j n + \varphi_j^{(p)}\right)
+            \]
+            $\displaystyle r = \sum_{(\omega, \alpha) \in \Omega} r(\omega)$, $\quad \Omega$ --- все уникальные пары $(\omega_j, \alpha_j)$.
         \end{itemize}
     \end{frame}
 
 
-    \section{Переход к тензорам}\label{sec:tensorisation}
-    \begin{frame}{Переход к тензорам}
-        \begin{table}
-            \begin{tabular}{lllll}
-                \bluetext{SSA:} & ряд $\tX \Rightarrow$ & матрица $\mathbf{X} $ & $\Rightarrow$ & SVD $\mathbf{X}$ \\
-                \bluetext{Tensor SSA:} & ряд $\tX \Rightarrow$ & тензор $\mathcal{X} $ & $\Rightarrow$ & \begin{tabular}{l}
-                                                                                                             тензорное\\ разложение
-                \end{tabular} $\mathcal{X}$
-            \end{tabular}
-        \end{table}
-
-        \vspace{0.4cm}
-        Но существует несколько тензорных разложений, расширяющих SVD, среди них:
-        \begin{itemize}
-            \item High-order singular value decomposition (\bluetext{HOSVD})
-            \item Canonical polyadic decomposition (CPD)
-        \end{itemize}
-
-        \vspace{0.4cm}
-
-        Описания этих и других тензорных разложений, а также примеры их применения
-        в задачах обработки сигналов и машинного обучения, представлены в обзорной работе Sidiropoulos, De~Lathauwer et~al.~(2016)
-    \end{frame}
-
-    \begin{frame}{Построение тензора}
+    \section{High-Order MSSA}\label{sec:high-order-mssa}
+    \begin{frame}{Построение траекторного тензора}
         \center
-        \includegraphics[width=0.8\textwidth, height=0.8\textheight]{img/tensor_injection_diagram}
+        \includegraphics[width=\textwidth]{img/mssa-tensor-injection}
 
-        $L, I$ --- параметры
+        $L < N$, $\quad K = N - L + 1 \geqslant L$
     \end{frame}
-
 
     \begin{frame}{Разложение и группировка}
         \begin{itemize}
-            \item HOSVD траекторного тензора $\calX$ имеет вид
+            \item HOSVD траекторного тензора $\calH$ имеет вид
             \[
-                \calX = \sum_{i=1}^{I} \sum_{l=1}^{L} \sum_{j=1}^{N-I-L+2} \mathcal{Z}_{i,l,j} \mathbf{U}^{(1)}_{i}
-                \circ \mathbf{U}^{(2)}_{l} \circ \mathbf{U}^{(3)}_{j}.
+                \calH = \sum_{l=1}^{L} \sum_{k=1}^{K} \sum_{p=1}^{P} c_{lkp} \mathbf{U}^{(1)}_{l}
+                \circ \mathbf{U}^{(2)}_{k} \circ \mathbf{U}^{(3)}_{p}.
             \]
 
-            \vspace{0.6cm}
-            \itemТогда этап группировки в алгоритме HOSVD SSA имеет вид
+            \vspace{0.4cm}
+            \item Этап группировки в алгоритме HO-MSSA имеет вид
             \[
-                \tilde{\calX} = \sum_{i=1}^{R} \sum_{l=1}^{R} \sum_{j=1}^{R} \mathcal{Z}_{i,l,j} \mathbf{U}^{(1)}_{i}
-                \circ \mathbf{U}^{(2)}_{l} \circ \mathbf{U}^{(3)}_{j},
+                \widetilde{\calH} = \sum_{l=1}^{R_1} \sum_{k=1}^{R_2} \sum_{p=1}^{R_3} c_{lkp} \mathbf{U}^{(1)}_{l}
+                \circ \mathbf{U}^{(2)}_{k} \circ \mathbf{U}^{(3)}_{p},
             \]
-            $R\leqslant \min(I, L, N - I - L + 2)$ --- параметр алгоритма.
+            $R_i\leqslant \min(L, K, P)$ --- параметры алгоритма.
         \end{itemize}
     \end{frame}
 
-    \begin{frame}{Ранг в тензорном варианте}
+
+    \section{Ранги сигнала в HO-MSSA}\label{sec:tensor-ranks}
+    \begin{frame}{Ранги тензора}
+        \bluetext{$n$-ранг тензора:} размерность пространства, порождённого
+        векторами вдоль $n$-го измерения ($\operatorname{rank}_n(\mathcal{A})$).
+
+        \begin{theorem}
+            Пусть многомерный временной ряд
+            \[
+                \left( x_0^{(p)}, x_1^{(p)}, \ldots, x_{N-1}^{(p)} \right), \quad p=1, 2,\ldots, P
+            \]
+            имеет ранг $d$ в терминах MSSA, тогда для траекторного тензора $\mathcal{H}$, построенного по любой длине окна $L<N$
+            такой, что ${\min(L, K) \geqslant d}$, выполняется $\operatorname{rank}_1(\mathcal{H})=\operatorname{rank}2(\mathcal{H})=d$,
+            а $3$-ранг этого тензора равен рангу матрицы, в строках которой записаны заданные одномерные ряды.
+        \end{theorem}
+    \end{frame}
+
+    \begin{frame}{Ранги сигнала в HO-MSSA}
         \begin{itemize}
-            \item \bluetext{$n$-ранг тензора:} размерность пространства, порождённого
-            векторами вдоль $n$-го измерения.
-
-            \item В отличие от матричного случая, $n$-ранги тензора произвольной размерности могут в общем случае
-            не совпадать.
+            \item $1$- и $2$-ранги траекторного тензора $\calH$ сигнала $\tS$ совпадают с рангом этого сигнала в терминах MSSA.
+            \item Однако ранг третьего измерения имеет иной смысл.
         \end{itemize}
-
-        \begin{statement}
-            Пусть сигнал $\tS$ имеет конечный ранг $r$ в терминах \emph{SSA}\@.
-            Тогда для любых значений параметров $I$ и $L$ таких, что
-            \[
-                r\leqslant\min(I, L, N-I-L+2),
-            \]
-            все $n$-ранги траекторного тензора $\mathcal{X}$
-            этого сигнала с параметрами $I$ и $L$ будут равны $r$.
-        \end{statement}
-    \end{frame}
-
-    \begin{frame}{Численное сравнение}
-        Сигнал $s_n = 30\cos(2\pi n/12)$, $n\in \overline{1:71}$.
-        Шум гауссовский, белый с $\sigma=5$ и красный с $\delta=\sqrt{5}$,
-        $\varphi_1=0.5$ или $\varphi_2 = 0.9$.
-
-        \footnotesize
-        \begin{table}[ht]
-            \centering
-            \caption{RMSE восстановленного с помощью SSA сигнала.}
-            \begin{tabular}{r|rrrr}
-                \hline
-                \backslashbox{вид шума}{$L$} & 12   & 24   & 30            & 36   \\
-                \hline
-                белый, $\sigma=5$            & 1.82 & 1.42 & \textbf{1.40} & 1.42 \\\hline
-                красный, $\varphi=0.5$       & 1.31 & 1.03 & \textbf{1.01} & 1.03 \\\hline
-                красный, $\varphi=0.9$       & 1.88 & 1.37 & \textbf{1.34} & 1.36 \\
-                \hline
-            \end{tabular}
-        \end{table}
-        \begin{table}[!ht]
-            \centering
-            \caption{RMSE восстановленного с помощью HOSVD SSA сигнала.}
-            \begin{tabular}{r|rrrrrr}
-                \hline
-                \backslashbox{вид шума}{$I\times L$} & 12$\times$12 & 12$\times$24  & 12$\times$30 & 24$\times$24 & 24$\times$30 & 30$\times$36 \\
-                \hline
-                белый шум, $\sigma=5$                & 1.64         & 1.53          & 1.57         & 1.66         & 1.62         & \textbf{1.49} \\
-                \hline
-                красный шум, $\varphi=0.5$           & 1.18         & 1.12          & 1.14         & 1.21         & 1.19         & \textbf{1.08} \\
-                \hline
-                красный шум, $\varphi=0.9$           & 1.58         & \textbf{1.44} & 1.47         & 1.57         & 1.54         & 1.46          \\
-                \hline
-            \end{tabular}
-        \end{table}
-    \end{frame}
-
-
-    \section{Tensor MSSA}\label{sec:tens_mssa}
-    \begin{frame}{MSSA}
-        \bluetext{Многомерный временной ряд:}
-
-        $\tX = (\tX^{(1)}, \tX^{(2)}, \dots, \tX^{(p)})^\rmT, \qquad
-        \tX^{(i)} = (x_1^{(i)}, x_2^{(i)}, \dots, x_N^{(i)})$.
-
-        \vspace{0.6cm}
-
-        \bluetext{Траекторная матрица этого ряда:}
-
-        $\bfX = [\bfX^{(1)}: \bfX^{(2)}: \ldots: \bfX^{(p)}],$
-
-        $\bfX^{(i)}$ --- траекторная матрица $\tX^{(i)}$.
-
-        \vspace{0.3cm}
-
-        Дальнейшие шаги алгоритма MSSA (разложение траекторной матрицы и восстановление сигнала) аналогичны стандартному SSA.
-
-        \vspace{0.6cm}
-
-        \begin{itemize}
-            \item В случаях, когда сигналы $\tS^{(i)}$ имеют похожую структуру, использование MSSA даёт
-            лучшие результаты в задаче выделения сигнала, чем применение SSA
-            к каждому ряду отдельно.
-        \end{itemize}
-    \end{frame}
-
-    \begin{frame}{Тензорная модификация MSSA}
-        Вместо матрицы $\bfX = [\bfX^{(1)}:\bfX^{(2)}: \ldots: \bfX^{(p)}]$
-
-        тензор $\calX:~\calX_{,,i} = \bfX^{(i)}$
-
-        \begin{center}
-            \includegraphics[width=0.8\textwidth, height=0.75\textheight]{img/mssa_injection}
-        \end{center}
-    \end{frame}
-
-    \begin{frame}{Тензорная модификация MSSA}
-        Утверждение, позволяющее перенести понятие ранга сигнала на тензорный вариант MSSA.
 
         \vspace{0.2cm}
 
-        \begin{statement}
-            Пусть $\mathbf{A} = [\mathbf{H}_1: \mathbf{H}_2: \ldots: \mathbf{H}_p] \in \mathbb{C}^{L\times Kp}$,
-            её SVD имеет вид:
-            \[
-                \mathbf{A} =\mathbf{U} \mathbf{\Lambda} \mathbf{V},
-            \]
-            и пусть $\mathcal{A}: \mathcal{A}_{,,i} = \mathbf{H}_i \in \mathbb{C}^{L\times K \times p}$, его HOSVD имеет вид:
-            \[
-                \mathcal{A}=\mathcal{Z} \times_1 \hat{\mathbf{U}}_1 \times_2 \hat{\mathbf{U}}_2 \times_3 \hat{\mathbf{U}}_3.
-            \]
+        На этапе группировки рекомендуется брать $R_1=R_2=r$ и $R_3 = r_3$, где $r$ --- MSSA-ранг сигнала,
+        $r_3$ --- ранг матрицы, составленной из $\tS_p$.
 
-            Тогда существуют такие SVD матрицы $\bfA$ и HOSVD тензора $\calA$,
-            что $\bfU = \hat{\bfU}_1$.
-        \end{statement}
-    \end{frame}
-
-    \begin{frame}{Ранги в тензорном MSSA}
-        \begin{itemize}
-            \item Если сигнал $\tS$ имеет ранг $r$ в терминах SSA, то при $r \leqslant \min(L, K)$ выполнено
-            $\operatorname{rank}_1(\calX) = r$.
-            \item По симметричности построения, в этих предположениях $\operatorname{rank}_2(\calX) = r$.
-            \item Однако ранг третьего измерения приобретает иной смысл.
-        \end{itemize}
-
-        \vspace{0.1cm}
-
-        В тензорном варианте алгоритма к параметрам $L$ и $R$ \bluetext{добавляется} параметр~$R_3$.
-
-        \vspace{0.4cm}
+        \vspace{0.2cm}
 
         \bluetext{Примеры}
-
-        \vspace{0.1cm}
-
-        $s_n^{(m)}=a_m \cos(2\pi n \omega_m + \psi_m),\, m \in \{1,\, 2\},\, n\in \overline{1:N},$
-
-        $a_m\ne 0,\, 0<\omega_m<\frac 1 2,\, 0 \leqslant \psi < 2 \pi$
+        \[
+            s_n^{(p)} = \sum_{j=1}^{R} a_j^{(p)} e^{ -\alpha_j n }\cos\left( 2 \pi \omega_j n + \varphi_j^{(p)}\right),
+            \quad n\in \overline{0:N-1},
+        \]
+        $p\in \overline{1:P},\, a_j^{(p)}\ne 0,\, \alpha_j \in \bbR,\, \omega_j \in(0, 1/2),\, \varphi_j^{(p)}\in [0, 2\pi)$
 
         \vspace{0.1cm}
 
         \begin{enumerate}
-            \item $\psi_1 = \psi_2,\, \omega_1 = \omega_2 \implies r = r_1 = r_2 = 2,\, r_3 = 1$,
-            \item $\psi_1 \ne \psi_2,\, \omega_1 = \omega_2 \implies r = r_1 = r_2 = 2,\, r_3 = 2$,
-            \item $\hspace{4em}\, \omega_1 \ne \omega_2 \implies r = r_1 = r_2 = 4,\, r_3 = 2$.
+            \item $\omega_i \ne \omega_j,\, \varphi_j^{(p)} = \varphi_j^{(m)} \hspace{0.53cm}
+            \implies r = 2R,\, r_3 = R$,
+            \item $\omega_i \ne \omega_j,\, \varphi_j^{(p)} = b_j p+c_j
+            \implies r = 2R,\, r_3 = 2R$.
         \end{enumerate}
     \end{frame}
 
+
+    \section{Численные сравнения}\label{sec:numerical-comparisons}
     \begin{frame}{Численные сравнения}
-        $s_n^{(m)} = a_m \cos(2\pi n \omega_m + \psi_m),\, n\in\overline{1:71},\, a_1 = 30,\, a_2 = 20$.
+        \begin{enumerate}
+            \item \bluetext{Одинаковые фазы}
+            \[
+                x_n^{(p)} = c_1^{(p)} e^{-0.01 n} \cos(2\pi 0.2 n) + c_2^{(p)} e^{-0.02 n} \cos(2\pi 0.22 n) + \varepsilon_n^{(p)},
+            \]
+            \item \bluetext{Линейно меняющиеся фазы}
+            \[
+                \begin{split}
+                    x_n^{(p)} &= c_1^{(p)} e^{-0.01 n} \cos(2\pi 0.2 n + p \pi / 6)\\
+                    &+ c_2^{(p)} e^{-0.02 n} \cos(2\pi 0.22 n + p \pi / 9) + \varepsilon_n^{(p)},
+                \end{split}
+            \]
+        \end{enumerate}
+        В обоих случаях $n=0,1,\ldots, 24$, $p=1,2,\ldots, 12$, $c_k^{(p)}\sim \rmN(0, 1)$, $\varepsilon_n^{(p)}\sim \rmN(0, 0.02)$
+        и независимы.
 
-        \vspace{0.3cm}
-
-        Шум --- белый гауссовский, с параметром $\sigma=5$, RMSE было сосчитано по 500 реализациям зашумлённого ряда,
-        сравнение проводилось на одних и тех же реализациях шума.
+        \vspace{0.2cm}
+        Точность сравнивалась по RMSE по 1000 реализациям шума $\varepsilon_n^{(p)}$,
+        сравнение проводилось на одних и тех же реализациях шума при выборе оптимальных
+        для каждого метода параметров $L$, $R$ и $R_3$.
     \end{frame}
 
     \begin{frame}{Численные сравнения}
 %        \footnotesize
         \begin{table}[!ht]
             \centering
-            \caption{RMSE восстановленных различными методами сигналов для каждого набора параметров сигнала.}
-            \def\arraystretch{1.7}
-            \resizebox{\columnwidth}{!}{
-                \begin{tabular}{r|r|rrrrr}
-                    \hline
-                    Условия & \backslashbox{Метод}{$L$} & 12   & 24                       & 36                       & 48                       & 60   \\ \hline
-                    \multirow{2}{*}{
-                        \begin{tabular}{r}
-                            $\omega_1 = \omega_2 = \frac 1 {12}$ \\
-                            $\psi_1 = \psi_2 = 0$                \\
-                        \end{tabular}
-                    }       & MSSA                      & 1.78 & 1.34                     & 1.24                     & \textbf{1.20}            & 1.42 \\ \cline{2-7}
-                    & HOSVD MSSA                & 1.35 & \bluetext{\textbf{1.10}} & \bluetext{\textbf{1.10}} & \bluetext{\textbf{1.10}} & 1.35 \\ \hhline{=|=|=====}
-                    \multirow{2}{*}{
-                        \begin{tabular}{r}
-                            $\omega_1 = \omega_2 = \frac 1 {12}$ \\
-                            $\psi_1 = 0,\, \psi_2 = \frac \pi  4$  \\
-                        \end{tabular}
-                    }       & MSSA                      & 1.78 & 1.34                     & 1.25                     & \textbf{1.20}            & 1.41 \\ \cline{2-7}
-                    & HOSVD MSSA                & 1.41 & \bluetext{\textbf{1.19}} & 1.20                     & \bluetext{\textbf{1.19}} & 1.41 \\ \hhline{=|=|=====}
-                    \multirow{2}{*}{
-                        \begin{tabular}{r}
-                            $\omega_1 = \frac 1 {12},\, \omega_2 = \frac 1 8$ \\
-                            $\psi_1 = 0,\, \psi_2 = \frac \pi  4$               \\
-                        \end{tabular}
-                    }       & MSSA                      & 2.63 & 1.94                     & 1.74                     & \textbf{1.69}            & 1.95 \\ \cline{2-7}
-                    & HOSVD MSSA                & 1.95 & \bluetext{\textbf{1.67}} & 1.69                     & \bluetext{\textbf{1.67}} & 1.95 \\ \hline
-                \end{tabular}
-            }
+            \caption{RMSE оценки многомерного сигнала}
+            \begin{tabular}{|l|c|c|}
+                \hline
+                & MSSA & HO-MSSA \\ \hline
+                равные фазы & $0.0107$ & $0.0079$ \\ \hline
+                линейные фазы & $0.00924$ & $0.00918$ \\ \hline
+            \end{tabular}
         \end{table}
     \end{frame}
 
 
-    \section{Выводы}\label{sec:conclusion}
-    \begin{frame}{Выводы}
-        \begin{itemize}
-            \item HOSVD SSA и HOSVD MSSA являются прямыми обобщениями SSA и MSSA, однако устроены
-            существенно сложнее и имеют б\'{о}льшую трудоемкость.
-            \vspace{0.2cm}
-            \item Оба расширения усложняют алгоритм необходимостью подбора дополнительного параметра.
-            \vspace{0.2cm}
-            \item HOSVD SSA выделяет сигнал менее точно, чем SSA\@.
-            \vspace{0.2cm}
-            \item HOSVD MSSA выделяет сигнал точнее, чем MSSA\@.
-        \end{itemize}
-    \end{frame}
+%    \section{Выводы}\label{sec:conclusion}
+%    \begin{frame}{Выводы}
+%        \begin{itemize}
+%            \item Тензорный вариант HO-MSSA для выделения многомерного сигнала дал точность выше, чем обычный MSSA.
+%            \item
+%        \end{itemize}
+%    \end{frame}
 \end{document}
