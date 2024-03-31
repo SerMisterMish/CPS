@@ -28,6 +28,8 @@
 \usepackage{graphics}
 \usepackage{color}
 \usepackage{mathdots}
+\usepackage{graphicx}
+\usepackage{mdwtab}
 \include{letters_series_mathbb}
 
 \setbeamercolor{bluetext_color}{fg=blue}
@@ -43,7 +45,6 @@
 \institute[Санкт-Петербургский Государственный Университет]{%
     \small
     Санкт-Петербургский государственный университет\\
-    Математико-механический факультет\\
     Кафедра статистического моделирования\\
     \vspace{1.25cm}
 }
@@ -67,7 +68,7 @@
 
         $\tX = \tT + \tP + \tR$.
 
-        $\tT$ "--- тренд, $\tP$ "--- сезонность, $\tR$ "--- шум.
+        $\tT$ "--- тренд, $\tP$ "--- регулярные колебания, $\tR$ "--- шум.
         \vspace{0.3cm}
 
         \bluetext{Возможные задачи:}
@@ -87,6 +88,37 @@
         \end{itemize}
     \end{frame}
 
+    \begin{frame}{Пример применения SSA и ESPRIT}
+        \[
+            s_n = e^{-0.01 n} \cos(2\pi n / 3) + e^{-0.02 n} \cos(2\pi n / 4), \quad n=0, 1, \ldots, 46
+        \]
+
+        \smallskip
+        \center
+        \includegraphics[width=\textwidth]{img/decomp}
+    \end{frame}
+
+    \begin{frame}{Пример применения SSA и ESPRIT}
+        \begin{center}
+            \includegraphics[width=\textwidth]{img/rec}
+        \end{center}
+%        Восстановленные ESPRIT параметры
+        \begin{table}
+            \caption{Восстановленные ESPRIT параметры}
+            \begin{tabular}{|c|c|c|}
+                \hline
+                Номер слагаемого  & 1         & 2        \\ \hline
+                Период            & $3$       & $4.06$   \\ \hline
+                Степень затухания & $ -0.008$ & $-0.027$ \\ \hline
+            \end{tabular}
+        \end{table}
+%        \begin{itemize}
+%            \item \bluetext{Периоды}: $T_1 = 3$, $T_2 = 4.06$
+%            \item \bluetext{Степени затухания}: $\alpha_1 = -0.008$, $\alpha_2 = -0.027$
+%        \end{itemize}
+
+    \end{frame}
+
     \begin{frame}{Постановка задачи}
         В работе Papy et al.\ (2005) была предложена тензорная модификация метода ESPRIT и экспериментально показано её
         преимущество для конкретной модели.
@@ -97,7 +129,9 @@
         исследование свойств тензорных модификаций методов семейства SSA с точки зрения
         точности выделения сигнала.
 
-        Рассмотрена тензорная модификация для выделения сигнала из многомерных временных рядов.
+        \smallskip
+
+        В докладе рассмотрена тензорная модификация для выделения сигнала из многомерных временных рядов.
     \end{frame}
 
 
@@ -359,8 +393,8 @@
             \caption{RMSE оценки многомерного сигнала}
             \begin{tabular}{|l|c|c|}
                 \hline
-                & MSSA & HO-MSSA \\ \hline
-                равные фазы & $0.0107$ & $0.0079$ \\ \hline
+                & MSSA      & HO-MSSA   \\ \hline
+                равные фазы   & $0.0107$  & $0.0079$  \\ \hline
                 линейные фазы & $0.00924$ & $0.00918$ \\ \hline
             \end{tabular}
         \end{table}
