@@ -36,7 +36,7 @@
 \newtheorem{theorem}{Теорема}
 \newtheorem{statement}{Утверждение}
 
-\title[Tensor SSA]{Тензорный анализ сингулярного спектра}
+\title[HO-MSSA]{High-order MSSA для выделения сигнала}
 
 \author[Хромов Н.А., Голяндина Н.Э.]{Хромов Никита Андреевич, Голяндина Нина Эдуардовна}
 
@@ -74,7 +74,7 @@
         \begin{enumerate}
             \item Выделение сигнала из ряда: нахождение $\tS = \tT + \tP$,
             \item Отделение компонент сигнала: нахождение $\tT$ и $\tP$,
-            \item Нахождение парамтров сигнала в параметрической модели.
+            \item Нахождение параметров сигнала в параметрической модели.
         \end{enumerate}
 
         \vspace{0.3cm}
@@ -87,15 +87,17 @@
         \end{itemize}
     \end{frame}
 
-    \begin{frame}{Имеющиеся результаты}
+    \begin{frame}{Постановка задачи}
         В работе Papy et al.\ (2005) была предложена тензорная модификация метода ESPRIT и экспериментально показано её
         преимущество для конкретной модели.
 
-        \vspace{0.6cm}
+        \medskip
 
         \textcolor{red}{Цель:} расширение предложенного Papy алгоритма для решения задачи выделения сигнала,
         исследование свойств тензорных модификаций методов семейства SSA с точки зрения
         точности выделения сигнала.
+
+        Рассмотрена тензорная модификация для выделения сигнала из многомерных временных рядов.
     \end{frame}
 
 
@@ -170,7 +172,7 @@
 
         \vspace{0.5cm}
 
-        \bluetext{Оператор вложения:}
+        \bluetext{Оператор вложения одномерного ряда:}
         \[
             \mathbb{H}_L\left( \tX_p \right) =
             \begin{pmatrix}
@@ -191,7 +193,8 @@
 
         \bluetext{Схема алгоритма MSSA для выделения сигнала}
         \begin{enumerate}
-            \item \bluetext{Вложение} $\tX \mapsto \bfH = [\bbH(\tX_1):\bbH(\tX_2): \dots: \bbH(\tX_P)]\in \bbR^{L\times KP},$
+            \item \bluetext{Вложение} $\tX \stackrel{\textcolor{red}{L}}{\mapsto} \bfH =
+            [\bbH_L(\tX_1):\bbH_L(\tX_2): \dots: \bbH_L(\tX_P)]\in \bbR^{L\times KP},$
 
             \vspace{0.2cm}
 
@@ -199,7 +202,7 @@
 
             \vspace{0.2cm}
 
-            \item \bluetext{Группировка} $\tilde{\bfS}= \sum_{i=1}^{R} \sqrt{\lambda_i}U_i V_i^\rmT,\,\,
+            \item \bluetext{Группировка} $\tilde{\bfS}= \sum_{i=1}^{\textcolor{red}{R}} \sqrt{\lambda_i}U_i V_i^\rmT,\,\,
             R \leqslant d$
 
             \vspace{0.2cm}
@@ -252,7 +255,7 @@
 
     \begin{frame}{Разложение и группировка}
         \begin{itemize}
-            \item HOSVD траекторного тензора $\calH$ имеет вид
+            \item High-Order SVD траекторного тензора $\calH$ имеет вид
             \[
                 \calH = \sum_{l=1}^{L} \sum_{k=1}^{K} \sum_{p=1}^{P} c_{lkp} \mathbf{U}^{(1)}_{l}
                 \circ \mathbf{U}^{(2)}_{k} \circ \mathbf{U}^{(3)}_{p}.
@@ -271,7 +274,7 @@
 
     \section{Ранги сигнала в HO-MSSA}\label{sec:tensor-ranks}
     \begin{frame}{Ранги тензора}
-        \bluetext{$n$-ранг тензора:} размерность пространства, порождённого
+        \bluetext{$n$-Ранг тензора:} размерность пространства, порождённого
         векторами вдоль $n$-го измерения ($\operatorname{rank}_n(\mathcal{A})$).
 
         \begin{theorem}
@@ -280,7 +283,7 @@
                 \left( x_0^{(p)}, x_1^{(p)}, \ldots, x_{N-1}^{(p)} \right), \quad p=1, 2,\ldots, P
             \]
             имеет ранг $d$ в терминах MSSA, тогда для траекторного тензора $\mathcal{H}$, построенного по любой длине окна $L<N$
-            такой, что ${\min(L, K) \geqslant d}$, выполняется $\operatorname{rank}_1(\mathcal{H})=\operatorname{rank}2(\mathcal{H})=d$,
+            такой, что ${\min(L, K) \geqslant d}$, выполняется $\operatorname{rank}_1(\mathcal{H})=\operatorname{rank}_2(\mathcal{H})=d$,
             а $3$-ранг этого тензора равен рангу матрицы, в строках которой записаны заданные одномерные ряды.
         \end{theorem}
     \end{frame}
@@ -335,13 +338,22 @@
         и независимы.
 
         \vspace{0.2cm}
-        Точность сравнивалась по RMSE по 1000 реализациям шума $\varepsilon_n^{(p)}$,
+        Точность сравнивалась по RMSE по 1000 реализациям шума $\varepsilon_n^{(p)}$ при фиксированных $c_k^{(p)}$,
         сравнение проводилось на одних и тех же реализациях шума при выборе оптимальных
         для каждого метода параметров $L$, $R$ и $R_3$.
     \end{frame}
 
     \begin{frame}{Численные сравнения}
-%        \footnotesize
+        \begin{enumerate}
+            \item Равные фазы \\
+            \bluetext{MSSA}: $L = 22$, $R=4$\\
+            \bluetext{HO-MSSA}: $L = 20$, $R=4$, $R_3=2$
+            \item Линейно меняющиеся фазы\\
+            \bluetext{MSSA}: $L = 21$, $R=4$\\
+            \bluetext{HO-MSSA}: $L = 21$, $R=4$, $R_3=4$
+        \end{enumerate}
+
+        \vspace{-0.4cm}
         \begin{table}[!ht]
             \centering
             \caption{RMSE оценки многомерного сигнала}
@@ -352,6 +364,9 @@
                 линейные фазы & $0.00924$ & $0.00918$ \\ \hline
             \end{tabular}
         \end{table}
+
+        \vspace{0.2cm}
+        \textcolor{red}{Вывод}: HO-MSSA выделяет многомерный сигнал с одной частотой точнее, чем MSSA.
     \end{frame}
 
 

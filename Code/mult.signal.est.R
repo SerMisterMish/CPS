@@ -106,12 +106,20 @@ N <- 24
 Q <- 12
 c1 <- rnorm(Q)
 c2 <- rnorm(Q)
-# s <- exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N) %o% c1 + exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N) %o% c2
-s <- sapply(1:Q, function(i) exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N + pi * i/ 6) * c1[i] +
-                            exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N + pi * i / 9) * c2[i])
+# w1 <- c(0.2, 0.18)
+# w2 <- c(0.22, 0.24)
+# l1 <- sample(w1, Q, replace = TRUE)
+# l2 <- sample(w2, Q, replace = TRUE)
+s <- exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N) %o% c1 + exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N) %o% c2
+# s <- sapply(1:Q, function(i) exp(-0.01 * 0:N) * cos(2 * pi * 0.2 * 0:N + pi * i/ 6) * c1[i] +
+#                             exp(-0.02 * 0:N) * cos(2 * pi * 0.22 * 0:N + pi * i / 9) * c2[i])
+# s <- sapply(1:Q, function(i) exp(-0.01 * 0:N) * cos(2 * pi * l1[i] * 0:N) * c1[i] +
+#                             exp(-0.02 * 0:N) * cos(2 * pi * l2[i] * 0:N) * c2[i])
+# r <- 8
 r <- 4
-# r3 <- 2
-r3 <- 4
+# r3 <- 8
+# r3 <- 4
+r3 <- 2
 SNR <- 30
 # sigma <- mean(sapply(1:Q, function(i) snr.to.sd(s[, i], SNR)))
 sigma <- 0.02
@@ -141,7 +149,7 @@ mult.signest.sc <- function(L, Mat = TRUE, Tens = TRUE) {
 
 R <- 1000
 signal.tens <- s %o% rep(1, R)
-L.mat <- 21; L.tens <- 21
+L.mat <- 17; L.tens <- 17
 se.mult.comp.res <- list()
 system.time({
   set.seed(1)
