@@ -201,7 +201,7 @@
 
     \section{MSSA}\label{sec:mssa}
     \begin{frame}{Описание алгоритма MSSA}
-        $\tX$ --- $P$-мерный временной ряд длины $N$ с сигналом $\tS$, $L$ --- длина окна,
+        $\tX$ --- $P$-мерный временной ряд длины $N$ с сигналом $\tS$, $L<N$~--- длина окна,
         $K = N - L + 1$.
 
         \vspace{0.5cm}
@@ -316,8 +316,8 @@
             \[
                 \left( x_0^{(p)}, x_1^{(p)}, \ldots, x_{N-1}^{(p)} \right), \quad p=1, 2,\ldots, P
             \]
-            имеет ранг $d$ в терминах MSSA, тогда для траекторного тензора $\mathcal{H}$, построенного по любой длине окна $L<N$
-            такой, что ${\min(L, K) \geqslant d}$, выполняется $\operatorname{rank}_1(\mathcal{H})=\operatorname{rank}_2(\mathcal{H})=d$,
+            имеет ранг $r$ в терминах MSSA, тогда для траекторного тензора $\mathcal{H}$, построенного по любой длине окна $L<N$
+            такой, что ${\min(L, K) \geqslant r}$, выполняется $\operatorname{rank}_1(\mathcal{H})=\operatorname{rank}_2(\mathcal{H})=r$,
             а $3$-ранг этого тензора равен рангу матрицы, в строках которой записаны заданные одномерные ряды.
         \end{theorem}
     \end{frame}
@@ -368,7 +368,7 @@
                 \end{split}
             \]
         \end{enumerate}
-        В обоих случаях $n=0,1,\ldots, 24$, $p=1,2,\ldots, 12$, $c_k^{(p)}\sim \rmN(0, 1)$, $\varepsilon_n^{(p)}\sim \rmN(0, 0.02)$
+        В обоих случаях $n=0,1,\ldots, 24$, $p=1,2,\ldots, 12$, $c_k^{(p)}\sim \rmN(0, 1)$, $\varepsilon_n^{(p)}\sim \rmN(0, 4\cdot 10^{-4})$
         и независимы.
 
         \vspace{0.2cm}
