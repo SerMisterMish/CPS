@@ -10,9 +10,9 @@ noise <- rnorm(N, sd = 0.4)
 
 s.ssa <- ssa(ts(s + noise))
 s.rec.signal <- reconstruct(s.ssa, groups = list(`Reconstructed signal` = 1:4))
-# s.rec$Original <- s
+s.rec.signal$Signal <- s
 pdf("./Talk/src/img/decomp.pdf", width = 8, height = 4.5)
-plot(s.rec.signal, add.residuals = TRUE, add.original = TRUE, plot.method = "xyplot",
+plot(s.rec.signal, add.residuals = FALSE, add.original = FALSE, plot.method = "xyplot",
      superpose = TRUE, auto.key = list(columns = 2))
 dev.off()
 s.rec.cos1 <-  reconstruct(s.ssa, groups = list(`Reconstructed` = 1:2))
